@@ -53,5 +53,49 @@ window.addEventListener('offline', updateConnection);
 updateConnection();
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => undefined));
+  let reloading = false;
+  let updateNotice: HTMLElement | undefined;
+
+  const promptForUpdate = (registration: ServiceWorkerRegistration) => {
+    if (!registration.waiting || updateNotice) return;
+    updateNotice = document.createElement('section');
+    updateNotice.className = 'update-notice';
+    updateNotice.setAttribute('role', 'status');
+    updateNotice.innerHTML = '<p>A documentation update is ready.</p><button type="button">Refresh</button>';
+    updateNotice.querySelector('button')?.addEventListener('click', () => {
+      registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+    });
+    document.body.append(updateNotice);
+  };
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(registration => {
+      const activateOrPrompt = () => {
+        if (!registration.waiting) return;
+        // A first install has no existing shell to protect, so activate it now.
+        if (!navigator.serviceWorker.controller) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        } else {
+          promptForUpdate(registration);
+        }
+      };
+      activateOrPrompt();
+      registration.addEventListener('updatefound', () => {
+        const worker = registration.installing;
+        worker?.addEventListener('statechange', () => {
+          if (worker.state === 'installed') activateOrPrompt();
+        });
+      });
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data?.type === 'UPDATE_READY') activateOrPrompt();
+      });
+    }).catch(() => undefined);
+  });
+
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!reloading) {
+      reloading = true;
+      window.location.reload();
+    }
+  });
 }

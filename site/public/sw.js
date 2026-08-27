@@ -1,12 +1,52 @@
-const CACHE = 'gh-account-autoswitch-v1';
-const SHELL = ['/', '/index.html', '/privacy/', '/terms/', '/mark.svg', '/assets/route-landscape.webp', '/assets/route-landscape-mobile.webp'];
-self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL))));
-self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))));
+// This template is completed by vite.config.ts after every release build.
+const CACHE = '__CACHE_NAME__';
+const PRECACHE = __PRECACHE__;
+
+async function cacheResponse(request, response) {
+  if (response && response.ok) {
+    const cache = await caches.open(CACHE);
+    await cache.put(request, response.clone());
+  }
+  return response;
+}
+
+async function networkFirst(request) {
+  try {
+    return await cacheResponse(request, await fetch(request));
+  } catch {
+    return (await caches.match(request)) || (await caches.match('/'));
+  }
+}
+
+async function cacheFirst(request) {
+  return (await caches.match(request)) || cacheResponse(request, await fetch(request));
+}
+
+self.addEventListener('install', event => event.waitUntil((async () => {
+  const cache = await caches.open(CACHE);
+  await cache.addAll(PRECACHE);
+  const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+  clients.forEach(client => client.postMessage({ type: 'UPDATE_READY', version: CACHE }));
+})()));
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+self.addEventListener('activate', event => event.waitUntil((async () => {
+  const keys = await caches.keys();
+  await Promise.all(keys.filter(key => key.startsWith('gh-account-autoswitch-') && key !== CACHE).map(key => caches.delete(key)));
+  await self.clients.claim();
+})()));
+
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(fetch(event.request).then(response => {
-    const copy = response.clone();
-    caches.open(CACHE).then(cache => cache.put(event.request, copy));
-    return response;
-  }).catch(() => caches.match(event.request).then(response => response || caches.match('/'))));
+  const url = new URL(event.request.url);
+  if (event.request.mode === 'navigate') {
+    event.respondWith(networkFirst(event.request));
+  } else if (url.origin === self.location.origin && url.pathname.startsWith('/assets/')) {
+    event.respondWith(cacheFirst(event.request));
+  } else if (url.origin === self.location.origin) {
+    event.respondWith(networkFirst(event.request));
+  }
 });
