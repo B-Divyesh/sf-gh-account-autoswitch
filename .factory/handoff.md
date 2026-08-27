@@ -1,4 +1,18 @@
-# Handoff: gh-account-autoswitch v0.1.0
+# Handoff: gh-account-autoswitch v0.1.0 — **FAIL independent verification**
+
+**Candidate tested:** `4877ae8f766ba2bfe8cda205c976e546ecea6783`
+**Live URL tested:** <https://gh-account-autoswitch.sociobot.in/>
+**Verification report:** [`.factory/verification.md`](verification.md)
+
+## Release status
+
+**FAIL — do not mark this candidate accepted.** Core CLI, package, site, accessibility, privacy, offline reload, and candidate/live parity passed. The live delivery does not meet the factory contract: fingerprinted assets have only `Cache-Control: public, must-revalidate, max-age=30` rather than long-lived immutable caching; the service-worker cache stays at hard-coded `gh-account-autoswitch-v1`; and live responses lack CSP/framing/permissions protections. Exact reproduction steps and severity evidence are in the verification report.
+
+Required follow-up before acceptance:
+
+1. Configure one-year immutable caching for hashed static assets, retaining short revalidation for HTML and service worker.
+2. Version the service-worker cache from each release and explicitly implement/test its update activation behavior.
+3. Add a static-site CSP, frame protection, permissions policy, and suitable HSTS lifetime at deployment.
 
 ## What shipped
 
@@ -34,7 +48,9 @@ To create ready-to-publish release archives (publishing is intentionally not per
 npm run package
 ```
 
-## Verification completed
+## Prior builder-reported verification (superseded as acceptance evidence)
+
+The following is retained as implementation history. It is not the independent acceptance result; the verdict and evidence above control.
 
 - `go test ./... -race`: pass.
 - `go vet ./...`: pass.
