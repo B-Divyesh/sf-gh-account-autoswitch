@@ -40,6 +40,7 @@ npm run package
 - `go vet ./...`: pass.
 - `npm test`: pass (Go package/CLI tests plus built-site structure and asset-budget tests).
 - `npm run build`: pass; outputs both the CLI and `dist/site/index.html`.
+- Fresh-clone check: `npm ci && npm test && npm run build` passed from a new local clone with no working-tree cache.
 - `npm run package`: pass; Linux/macOS amd64+arm64 tarballs and Windows amd64 zip inspected for binary, README, and license.
 - axe-core 4.13, WCAG 2 A/AA/2.1 AA: zero violations on `/`, `/privacy/`, and `/terms/`.
 - Lighthouse 12.8.2 mobile against the production preview: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 1.1 s, LCP 1.4 s, CLS 0, total blocking time 0 ms.
