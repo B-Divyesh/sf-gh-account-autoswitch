@@ -1,0 +1,9 @@
+{
+  "name": "gh-account-autoswitch docs",
+  "short_name": "gh autoswitch",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07100f",
+  "theme_color": "#07100f",
+  "icons": [{ "src": "/mark.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

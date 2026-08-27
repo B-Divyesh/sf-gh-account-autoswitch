@@ -4,3 +4,7 @@ dist/
 *.log
 graphify-out/
 .DS_Store
+.lighthouseci/
+playwright-report/
+test-results/
+*.profraw

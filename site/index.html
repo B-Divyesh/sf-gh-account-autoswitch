@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07100f">
+    <meta name="description" content="Make the GitHub CLI choose the right account for every repository without changing global state.">
+    <title>gh-account-autoswitch — the right GitHub account, per repository</title>
+    <link rel="canonical" href="https://gh-account-autoswitch.sociobot.in/">
+    <link rel="icon" href="/mark.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="preload" as="image" href="/assets/route-landscape.webp" type="image/webp" media="(min-width: 641px)" fetchpriority="high">
+    <link rel="preload" as="image" href="/assets/route-landscape-mobile.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high">
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="offline" data-offline hidden role="status">Offline copy — installation docs are still available.</div>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Primary navigation">
+        <a class="brand" href="/">
+          <svg class="brand-mark" aria-hidden="true" viewBox="0 0 36 36"><path d="M5 11 18 4l13 7v14l-13 7L5 25Z"/><path d="m10 14 8 4 8-4M18 18v9"/></svg>
+          <span><b>gh</b><i>/</i>autoswitch</span>
+        </a>
+        <div class="nav-links">
+          <a href="#how">How it works</a>
+          <a href="#rules">Rules</a>
+          <a class="nav-cta" href="#install">Install <span aria-hidden="true">↓</span></a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span aria-hidden="true">●</span> Identity routing for the GitHub CLI</p>
+          <h1 id="hero-title">Right repo.<br><em>Right account.</em><br>Every time.</h1>
+          <p class="lede">Route each <code>gh</code> command through the account that belongs to this repository—without changing global auth or colliding with another agent.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#install">Install the shim <span aria-hidden="true">↘</span></a>
+            <a class="button secondary" href="https://github.com/B-Divyesh/sf-gh-account-autoswitch">View source <span aria-hidden="true">↗</span></a>
+          </div>
+          <ul class="trust-list" aria-label="Safety properties">
+            <li><span aria-hidden="true">✓</span> Never stores tokens</li>
+            <li><span aria-hidden="true">✓</span> Never mutates global state</li>
+          </ul>
+        </div>
+        <figure class="hero-visual">
+          <picture>
+            <source media="(max-width: 640px)" srcset="/assets/route-landscape-mobile.webp">
+            <img src="/assets/route-landscape.webp" width="1536" height="1024" alt="Two separate luminous account routes pass through a transparent policy prism and arrive at one repository." fetchpriority="high">
+          </picture>
+          <figcaption>
+            <span><b class="dot cyan"></b> personal@github.com</span>
+            <span class="policy">policy matched</span>
+            <span><b class="dot lime"></b> work@github.com</span>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="proof strip" aria-label="Product summary">
+        <div class="shell proof-grid">
+          <p><strong>Process-scoped</strong><span>One token. One command.</span></p>
+          <p><strong>Context-aware</strong><span>Remote, owner, host, or path.</span></p>
+          <p><strong>Agent-safe</strong><span>No shared switch to race.</span></p>
+        </div>
+      </section>
+
+      <section class="section shell" id="how" aria-labelledby="how-title">
+        <div class="section-heading">
+          <p class="kicker">01 / The handoff</p>
+          <h2 id="how-title">A policy layer, not another credential store.</h2>
+          <p>The shim reads context, asks your existing <code>gh</code> installation for the selected token, and exposes it to one child process only.</p>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="step-number">01</span>
+            <div class="step-icon folder" aria-hidden="true"></div>
+            <h3>Read the repository</h3>
+            <p>Inspect <code>origin</code>, its host and owner, plus the absolute working directory.</p>
+          </li>
+          <li>
+            <span class="step-number">02</span>
+            <div class="step-icon prism" aria-hidden="true"></div>
+            <h3>Resolve one rule</h3>
+            <p>Evaluate your TOML top to bottom. Every field in the first winning rule must match.</p>
+          </li>
+          <li>
+            <span class="step-number">03</span>
+            <div class="step-icon terminal-icon" aria-hidden="true">›_</div>
+            <h3>Run in isolation</h3>
+            <p>Retrieve the token from <code>gh</code> and pass it only to the requested command.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section explorer-section" id="rules" aria-labelledby="rules-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="kicker">02 / Explain first</p>
+              <h2 id="rules-title">See the decision before you trust it.</h2>
+            </div>
+            <p><code>which</code> never retrieves a token. It shows the exact input and winning rule, in plain text or JSON.</p>
+          </div>
+          <div class="rule-explorer">
+            <div class="scenario-picker">
+              <label for="scenario">Try a repository</label>
+              <select id="scenario" data-scenario>
+                <option value="work">acme-corp / payments</option>
+                <option value="personal">octocat / dotfiles</option>
+                <option value="unmatched">unknown-org / prototype</option>
+              </select>
+              <div class="rule-stack" aria-hidden="true">
+                <span class="rule-line active"><b>1</b> owner = ^acme-corp$</span>
+                <span class="rule-line"><b>2</b> directory = ~/src/personal/**</span>
+              </div>
+            </div>
+            <div class="trace" aria-live="polite" data-trace>
+              <div class="terminal-bar"><span></span><span></span><span></span><b>gh-account-autoswitch which</b></div>
+              <dl>
+                <div><dt>Host</dt><dd data-host>github.com</dd></div>
+                <div><dt>Owner</dt><dd data-owner>acme-corp</dd></div>
+                <div><dt>Directory</dt><dd data-directory>~/src/work/payments</dd></div>
+                <div class="trace-result"><dt>Matched</dt><dd data-rule>Acme work · rule 1</dd></div>
+                <div class="trace-account"><dt>Account</dt><dd data-account>dev@acme.example</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell config-section" aria-labelledby="config-title">
+        <div class="section-heading">
+          <p class="kicker">03 / Tiny surface</p>
+          <h2 id="config-title">Four ways to describe where an identity belongs.</h2>
+        </div>
+        <div class="config-layout">
+          <div class="terminal code-panel">
+            <div class="terminal-bar"><span></span><span></span><span></span><b>~/.config/gh-accounts.toml</b></div>
+            <pre tabindex="0" aria-label="Example configuration"><code><span class="comment"># First complete match wins.</span>
+<span class="key">version</span> = <span class="number">1</span>
+
+[[<span class="key">rules</span>]]
+<span class="key">name</span> = <span class="string">"Acme work"</span>
+<span class="key">account</span> = <span class="string">"dev@acme.example"</span>
+<span class="key">host</span> = <span class="string">"github.com"</span>
+<span class="key">owner</span> = <span class="string">"^acme-corp$"</span>
+
+[[<span class="key">rules</span>]]
+<span class="key">name</span> = <span class="string">"Personal"</span>
+<span class="key">account</span> = <span class="string">"octocat"</span>
+<span class="key">directory</span> = <span class="string">"~/src/personal/**"</span></code></pre>
+          </div>
+          <dl class="matchers">
+            <div><dt><code>host</code></dt><dd>Exact host, including your GHES domain.</dd></div>
+            <div><dt><code>owner</code></dt><dd>Regular expression for an organization or user.</dd></div>
+            <div><dt><code>remote</code></dt><dd>Regular expression for canonical host/owner/repo.</dd></div>
+            <div><dt><code>directory</code></dt><dd>Path glob with <code>~</code>, <code>*</code>, and <code>**</code>.</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="section install-section" id="install" aria-labelledby="install-title">
+        <div class="shell install-grid">
+          <div>
+            <p class="kicker">04 / Get routed</p>
+            <h2 id="install-title">Two commands.<br>No global switch.</h2>
+            <p>Requires Go 1.22+ and an existing authenticated GitHub CLI. Generate your starter rules, review them, then keep working as usual.</p>
+            <a class="text-link" href="https://github.com/B-Divyesh/sf-gh-account-autoswitch#matching-behavior">Read the complete CLI reference <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="install-commands">
+            <div class="command-block">
+              <span class="command-label">1 · Install</span>
+              <code tabindex="0" data-copy-value="go install github.com/B-Divyesh/sf-gh-account-autoswitch/cmd/gh-account-autoswitch@latest">go install github.com/B-Divyesh/sf-gh-account-autoswitch/cmd/<strong>gh-account-autoswitch@latest</strong></code>
+              <button type="button" class="copy" data-copy aria-label="Copy install command">Copy</button>
+            </div>
+            <div class="command-block">
+              <span class="command-label">2 · Create rules</span>
+              <code tabindex="0" data-copy-value="gh-account-autoswitch init">gh-account-autoswitch <strong>init</strong></code>
+              <button type="button" class="copy" data-copy aria-label="Copy init command">Copy</button>
+            </div>
+            <p class="copy-status" data-copy-status aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell safety" aria-labelledby="safety-title">
+        <div class="section-heading">
+          <p class="kicker">Safety, by construction</p>
+          <h2 id="safety-title">Nothing global to race. Nothing secret to sync.</h2>
+        </div>
+        <div class="safety-grid">
+          <article><span aria-hidden="true">01</span><h3>No account switching</h3><p>The shim never invokes <code>gh auth switch</code>. Your active account remains untouched.</p></article>
+          <article><span aria-hidden="true">02</span><h3>No token storage</h3><p>Tokens stay in the existing <code>gh</code> credential store and one child environment.</p></article>
+          <article><span aria-hidden="true">03</span><h3>No silent fallback</h3><p>No matching rule is exit code 3, not permission to use whatever account happens to be active.</p></article>
+        </div>
+      </section>
+
+      <section class="cta shell" aria-labelledby="cta-title">
+        <div>
+          <p class="eyebrow"><span aria-hidden="true">●</span> Open source · MIT</p>
+          <h2 id="cta-title">Keep every identity<br>in its own lane.</h2>
+        </div>
+        <a class="button primary" href="#install">Install gh-account-autoswitch <span aria-hidden="true">↘</span></a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <a class="brand" href="/"><svg class="brand-mark" aria-hidden="true" viewBox="0 0 36 36"><path d="M5 11 18 4l13 7v14l-13 7L5 25Z"/><path d="m10 14 8 4 8-4M18 18v9"/></svg><span><b>gh</b><i>/</i>autoswitch</span></a>
+        <p>Independent community software.<br>Not affiliated with GitHub.</p>
+        <nav aria-label="Footer navigation"><a href="https://github.com/B-Divyesh/sf-gh-account-autoswitch">GitHub</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "gh-account-autoswitch",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.config.ts",
+    "clean": "node scripts/clean.mjs",
+    "build:cli": "node scripts/build-cli.mjs",
+    "build:site": "vite build --config vite.config.ts",
+    "build": "npm run clean && npm run build:cli && npm run build:site",
+    "test:go": "go test ./...",
+    "test:site": "npm run build:site && node --test tests/site.test.mjs",
+    "test": "npm run test:go && npm run test:site",
+    "package": "node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "vite": "^7.1.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
