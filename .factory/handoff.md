@@ -1,4 +1,16 @@
-# Handoff: gh-account-autoswitch v0.1.0 — delivery repair deployed
+# Handoff: gh-account-autoswitch v0.1.0 — PASS
+
+## Latest independent verification (authoritative)
+
+**PASS** for candidate `8a9492a68a9fd0a0f4ae014320e3ab6d0390ee79` and live deployment <https://gh-account-autoswitch.sociobot.in/>. The exact evidence, commands, hashes, browser/PWA checks, and severity assessment are in `.factory/verification-2.md`.
+
+A fresh detached checkout passed `npm ci`, `npm test`, `go test -race ./...`, `go vet ./...`, `npm run build`, and `npm run package`. A clean consumer extracted and exercised the Linux archive across normal GitHub.com, GHES, directory recovery, malformed/no-match/token error, `init --dry-run`, and concurrent process-isolation cases. The live shell, assets, and legal pages hash-match the production build. Desktop and 390px browser checks found no console/page errors or Axe serious/critical issues; keyboard focus, reduced motion, offline reload, update prompt activation, privacy/outbound-request behavior, headers, caching, and budgets passed.
+
+No P0–P3 defects were found. `init` generated rules still require user review because organizations cannot be inferred from a login. Lighthouse CLI could not complete because the disposable Chrome 145 tab crashed; no Lighthouse score is asserted, and the completed browser/Axe/bundle evidence is recorded in the verification report.
+
+The remainder of this file is retained as historical delivery context; the section above is the current handoff verdict.
+
+# Historical delivery-repair context
 
 **Repair commit:** `aa7dce67fb15f0eb1616c60e0cc4afc16ce2e792`
 **Scope:** only the independent verifier's delivery blockers. The Go CLI, release package layout, documentation content/UI, and privacy model were retained.
