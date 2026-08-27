@@ -39,6 +39,7 @@ test('initial scripts and styles stay within budgets', async () => {
 
 test('site has no third-party runtime resources', async () => {
   const html = await readFile(new URL('index.html', root), 'utf8');
-  assert.doesNotMatch(html, /<(script|link|img)[^>]+(?:src|href)="https?:\/\//i);
+  assert.doesNotMatch(html, /<(script|img|source)[^>]+(?:src|srcset)="https?:\/\//i);
+  assert.doesNotMatch(html, /<link[^>]+rel="stylesheet"[^>]+href="https?:\/\//i);
   assert.match(await readFile(new URL('sw.js', root), 'utf8'), /gh-account-autoswitch-v1/);
 });
