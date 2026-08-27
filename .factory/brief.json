@@ -1,0 +1,13 @@
+{
+  "slug": "gh-account-autoswitch",
+  "title": "Automatic per-repo GitHub account selection for the gh CLI",
+  "artifact_class": "cli",
+  "monetization": "free",
+  "smallest_useful_product": "A Go gh shim that matches cwd and git remote rules, gets the selected user's token from gh, and execs gh with GH_TOKEN scoped to the child process. Includes init and which commands.",
+  "constraints": [
+    "Never store tokens",
+    "Never mutate gh global authentication state",
+    "Support GitHub.com and GitHub Enterprise hosts",
+    "Deprecate gracefully if gh gains native contextual switching"
+  ]
+}
