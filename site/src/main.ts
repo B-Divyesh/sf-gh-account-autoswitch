@@ -92,6 +92,7 @@ try {
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   let reloading = false;
   let updateNotice: HTMLElement | undefined;
+  const pageWasControlled = Boolean(navigator.serviceWorker.controller);
 
   const promptForUpdate = (registration: ServiceWorkerRegistration) => {
     if (!registration.waiting || updateNotice) return;
@@ -130,7 +131,7 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   });
 
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!reloading) {
+    if (pageWasControlled && !reloading) {
       reloading = true;
       window.location.reload();
     }
