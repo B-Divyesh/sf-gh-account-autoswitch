@@ -33,8 +33,10 @@ test('first screen and catalog use the reviewed plain wording', async () => {
   const catalog = (await readFile(new URL('../.factory/catalog-description.txt', import.meta.url), 'utf8')).trim();
   assert.ok(catalog.startsWith('Choose '), 'catalog description starts with a verb');
   assert.ok(catalog.length <= 120, `catalog description is ${catalog.length} characters`);
-  const copy = `${html}\n${await readFile(new URL('../README.md', import.meta.url), 'utf8')}`;
+  const legalCopy = await Promise.all(['privacy/index.html', 'terms/index.html'].map(page => readFile(new URL(`../site/${page}`, import.meta.url), 'utf8')));
+  const copy = `${html}\n${await readFile(new URL('../README.md', import.meta.url), 'utf8')}\n${legalCopy.join('\n')}`;
   assert.doesNotMatch(copy, /\b(?:leverage|seamless|effortless|robust|powerful|intuitive|reimagine|supercharge|unlock|delightful|journey|ecosystem|AI-powered)\b/i);
+  assert.doesNotMatch(copy, /(?:independent community|not affiliated|does not endorse|does not support)/i, 'unverifiable affiliation claims are absent');
 });
 
 test('built routes have one accessible document skeleton', async () => {

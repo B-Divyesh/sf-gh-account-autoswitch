@@ -8,7 +8,7 @@
   },
   {
     "id": "browser-demo",
-    "claim": "The ?demo=1 entry opens sample data with a persistent banner, reset control, and no browser storage.",
+    "claim": "The ?demo=1 entry opens sample data with a persistent banner and reset control; it stores no personal data and caches only declared public files.",
     "where": "first screen, demo page, README",
     "test": "npm run test:claims -- --grep @claim:browser-demo",
     "sandbox": "fresh browser context; query entry; replay and reset flow"

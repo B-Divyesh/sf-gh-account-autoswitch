@@ -304,7 +304,7 @@ test('site makes only same-origin runtime requests @claim:site-private', async (
   expect((await context.storageState()).origins).toEqual([]);
 });
 
-test('query demo opens the isolated sample and resets it @claim:browser-demo', async ({ page }) => {
+test('query demo opens the isolated sample, caches only public files, and resets it @claim:browser-demo', async ({ page }) => {
   await page.goto('/?demo=1');
   await expect(page).toHaveURL(/\/demo\/$/);
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
@@ -315,7 +315,40 @@ test('query demo opens the isolated sample and resets it @claim:browser-demo', a
   await expect(page.getByRole('button', { name: 'Replay recording' })).toBeVisible();
   await expect(page.getByText('Reset restored the starting sample.')).toHaveText('Reset restored the starting sample.');
   await expect(page.locator('h1')).toBeFocused();
-  expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
+  const storage = await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+    const source = await fetch('/sw.js').then(response => response.text());
+    const match = source.match(/const PRECACHE = (\[[^;]+\]);/);
+    if (!match) throw new Error('service worker precache declaration is missing');
+    const declared = JSON.parse(match[1]);
+    const cacheNames = await caches.keys();
+    const entries = (await Promise.all(cacheNames.map(async name => {
+      const requests = await (await caches.open(name)).keys();
+      return requests.map(request => request.url);
+    }))).flat();
+    return {
+      local: localStorage.length,
+      session: sessionStorage.length,
+      indexed: (await indexedDB.databases()).length,
+      cacheNames,
+      entries: entries.map(entry => {
+        const url = new URL(entry);
+        return { origin: url.origin, path: url.pathname, search: url.search };
+      }),
+      declared
+    };
+  });
+  expect(storage.local).toBe(0);
+  expect(storage.session).toBe(0);
+  expect(storage.indexed).toBe(0);
+  expect(storage.cacheNames).toHaveLength(1);
+  expect(storage.cacheNames[0]).toMatch(/^gh-account-autoswitch-/);
+  expect(storage.entries).not.toEqual([]);
+  for (const entry of storage.entries) {
+    expect(entry.origin).toBe('http://127.0.0.1:4173');
+    expect(entry.search).toBe('');
+    expect(storage.declared).toContain(entry.path);
+  }
   await expect(page.getByRole('link', { name: 'Start for real' })).toHaveAttribute('href', '/#install');
 });
 

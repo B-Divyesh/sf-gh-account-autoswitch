@@ -26,6 +26,7 @@ function releaseServiceWorker() {
       outputDirectory = resolve(config.root, config.build.outDir);
     },
     async closeBundle() {
+      const template = await readFile('site/public/sw.js', 'utf8');
       const outputFiles = (await filesIn(outputDirectory))
         .map(file => relative(outputDirectory, file).replaceAll('\\', '/'))
         .filter(file => file !== 'sw.js' && file !== 'staticwebapp.config.json' && !file.endsWith('.map'))
@@ -34,13 +35,13 @@ function releaseServiceWorker() {
         .replaceAll(/[^a-zA-Z0-9._-]/g, '-')
         .slice(0, 48);
       const digest = createHash('sha256').update(release);
+      digest.update(template);
       for (const file of outputFiles) {
         digest.update(file);
         digest.update(await readFile(join(outputDirectory, file)));
       }
       const cache = `gh-account-autoswitch-${release}-${digest.digest('hex').slice(0, 12)}`;
-      const precache = [...new Set(['/', '/index.html', '/demo/', '/privacy/', '/terms/', '/404.html', ...outputFiles.map(file => `/${file}`)])];
-      const template = await readFile('site/public/sw.js', 'utf8');
+      const precache = [...new Set(['/', '/index.html', '/demo/', '/privacy/', '/terms/', '/404.html', '/sw.js', ...outputFiles.map(file => `/${file}`)])];
       await writeFile(
         join(outputDirectory, 'sw.js'),
         template.replace('__CACHE_NAME__', cache).replace('__PRECACHE__', JSON.stringify(precache))

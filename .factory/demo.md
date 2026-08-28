@@ -6,7 +6,7 @@ Open <https://gh-account-autoswitch.sociobot.in/?demo=1>. The query entry redire
 
 The page shows a recorded run with three matches and one expected no-match result. The persistent banner contains **Reset demo** and **Start for real**.
 
-Reset restores the initial recording, announces the reset, and moves focus to the heading. The browser demo uses no `localStorage`, `sessionStorage`, IndexedDB, account data, or repository data.
+Reset restores the initial recording, announces the reset, and moves focus to the heading. The browser demo uses no `localStorage`, `sessionStorage`, IndexedDB, account data, or repository data. Its service worker caches only declared public documentation files for offline use.
 
 ## CLI entry
 

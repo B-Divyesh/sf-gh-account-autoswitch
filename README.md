@@ -128,6 +128,6 @@ The site has no analytics or third-party runtime scripts. A service worker keeps
 
 ## License and status
 
-The project uses the MIT License. It is independent community software and is not affiliated with GitHub.
+The project uses the MIT License.
 
 See [CHANGELOG.md](CHANGELOG.md) for release notes.

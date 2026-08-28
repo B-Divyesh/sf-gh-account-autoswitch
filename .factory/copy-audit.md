@@ -53,10 +53,13 @@ The headline states the job in eight words. The following sentence names develop
 | The command never opens your rules file or asks `gh` for a token. | 13 |
 | The command creates and removes its own temporary workspace. | 9 |
 | Reset restored the starting sample. | 5 |
+| The browser demo stores no personal account or repository data. | 10 |
+| The site caches public documentation for offline use. | 8 |
+| Reset restores the fixed examples. | 5 |
 
 ## Legal and README check
 
-All prose sentences are 22 words or fewer. Commands, code samples, table rows, navigation labels, and addresses are not sentences. The banned-word scan returned no matches.
+All prose sentences are 22 words or fewer. Commands, code samples, table rows, navigation labels, and addresses are not sentences. The banned-word scan returned no matches. Untestable affiliation or endorsement statements were removed from the README and Terms page.
 
 ## Terminology
 
