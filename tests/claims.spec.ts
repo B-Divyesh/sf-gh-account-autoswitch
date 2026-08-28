@@ -294,6 +294,7 @@ test('clean builds write the documented CLI and site artifacts @claim:build-arti
 });
 
 test('release packaging includes every supported binary, README, and license @claim:release-package', async () => {
+  test.setTimeout(180_000);
   await execFile('npm', ['run', 'package']);
   const release = join(process.cwd(), 'dist', 'release');
   const expected = [
@@ -314,7 +315,7 @@ test('release packaging includes every supported binary, README, and license @cl
     expect(files.some(file => /(?:^|\/)LICENSE$/.test(file))).toBe(true);
     expect(files.some(file => /(?:^|\/)gh-account-autoswitch(?:\.exe)?$/.test(file))).toBe(true);
   }
-}, 180_000);
+});
 
 test('all documented product commands emit parseable JSON @claim:json-output', async () => {
   const root = await temp('json-output');
