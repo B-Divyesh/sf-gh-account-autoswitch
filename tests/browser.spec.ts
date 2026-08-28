@@ -42,6 +42,18 @@ test('query demo entry is one click and reset stays isolated', async ({ page }) 
   await expect(page).toHaveURL(/\/demo\/$/);
 });
 
+test('one mobile demo click shows a complete sample match', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Try it with sample data' }).first().click();
+  await expect(page).toHaveURL(/\/demo\/$/);
+  const firstSample = page.locator('[data-demo-row="work"]');
+  await expect(firstSample).toContainText('github.com/acme-corp/payments');
+  await expect(firstSample).toContainText('dev@acme.example');
+  await expect(firstSample).toContainText('Acme work');
+  expect(await firstSample.evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(844);
+});
+
 test('unknown paths use the product 404', async ({ page }) => {
   const errors: string[] = [];
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
@@ -87,6 +99,31 @@ test('mobile routes fit without page overflow and keep primary actions visible',
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Reset demo' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Start for real' })).toBeVisible();
+});
+
+test('every visible mobile control has a 44 pixel hit area', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of ['/', '/demo/', '/privacy/', '/terms/', '/no-such-page']) {
+    await page.goto(route);
+    const controls = await page.locator('a, button, input, select').evaluateAll(elements => elements
+      .filter(element => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+      })
+      .map(element => {
+        const rect = element.getBoundingClientRect();
+        return {
+          label: (element.getAttribute('aria-label') || element.textContent || element.tagName).trim().replace(/\s+/g, ' '),
+          width: rect.width,
+          height: rect.height
+        };
+      }));
+    for (const control of controls) {
+      expect(control.width, `${route}: ${control.label} width`).toBeGreaterThanOrEqual(44);
+      expect(control.height, `${route}: ${control.label} height`).toBeGreaterThanOrEqual(44);
+    }
+  }
 });
 
 test('keyboard focus and reduced motion are visible and respected', async ({ page }) => {

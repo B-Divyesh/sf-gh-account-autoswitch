@@ -7,6 +7,7 @@ All notable changes follow Keep a Changelog and semantic versioning.
 ### Changed
 
 - Strengthened the isolated demo, route focus, metadata consistency, and claim-by-claim acceptance coverage.
+- Made the first mobile demo result visible without scrolling, enlarged shared navigation targets to 44 × 44 px, and added executable development, build, and package claims.
 
 ## [0.1.0] - 2026-08-27
 

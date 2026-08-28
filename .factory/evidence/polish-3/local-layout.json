@@ -1,0 +1,11 @@
+{
+  "demoUrl": "http://127.0.0.1:4173/demo/",
+  "firstSample": {
+    "bottom": 513.171875,
+    "text": "github.com/acme-corp/paymentsdev@acme.exampleAcme work"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  }
+}

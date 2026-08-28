@@ -35,6 +35,22 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     assert.deepEqual([...origins], [base.origin], `${route} request origins`);
     const width = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
     assert.equal(width[0], width[1], `${route} ${viewport.width}px overflow`);
+    if (viewport.width === 390) {
+      const controls = await page.locator('a, button, input, select').evaluateAll(elements => elements
+        .filter(element => {
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+        })
+        .map(element => {
+          const rect = element.getBoundingClientRect();
+          return { label: (element.getAttribute('aria-label') || element.textContent || element.tagName).trim(), width: rect.width, height: rect.height };
+        }));
+      for (const control of controls) {
+        assert.ok(control.width >= 44, `${route} ${control.label} width`);
+        assert.ok(control.height >= 44, `${route} ${control.label} height`);
+      }
+    }
     const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
     assert.deepEqual(axe.violations.filter(item => ['serious', 'critical'].includes(item.impact || '')), [], `${route} axe`);
     results.push({ route, viewport: viewport.width, status, axeSeriousCritical: 0, consoleErrors: 0 });
@@ -50,6 +66,7 @@ await page.goto(new URL('/?demo=1', base).href, { waitUntil: 'networkidle' });
 assert.match(page.url(), /\/demo\/$/, 'query entry reaches demo route');
 assert.equal(await page.getByText('Demo — sample data, nothing is saved').isVisible(), true, 'demo banner');
 assert.equal(await page.getByRole('row').count(), 5, 'sample rows');
+assert.ok(await page.locator('[data-demo-row="work"]').evaluate(element => element.getBoundingClientRect().bottom) <= 844, 'first mobile sample row is above the fold');
 await page.getByRole('button', { name: 'Replay recording' }).click();
 await page.getByRole('button', { name: 'Reset demo' }).click();
 assert.equal(await page.getByRole('button', { name: 'Replay recording' }).isVisible(), true, 'reset restores replay state');

@@ -57,9 +57,19 @@ The headline states the job in eight words. The following sentence names develop
 | The site caches public documentation for offline use. | 8 |
 | Reset restores the fixed examples. | 5 |
 
+## Mobile demo result
+
+| Copy unit | Words | Result |
+| --- | ---: | --- |
+| See three repository-to-account matches | 4 | pass |
+
+At 390 × 844, the first complete sample result shows the repository, account, and rule without scrolling. The browser regression checks its bottom edge against the viewport.
+
 ## Legal and README check
 
-All prose sentences are 22 words or fewer. Commands, code samples, table rows, navigation labels, and addresses are not sentences. The banned-word scan returned no matches. Untestable affiliation or endorsement statements were removed from the README and Terms page.
+All prose sentences are 22 words or fewer. Commands, code samples, table rows, navigation labels, and addresses are not sentences. The banned-word scan returned no matches. Untestable affiliation or endorsement statements and the external deployment-ownership sentence were removed from the README and Terms page.
+
+The development sentences about Node, Go, the full test suite, build outputs, and release archives each have a manifest-backed claim test. The one-line catalog description starts with “Choose” and is 76 characters.
 
 ## Terminology
 

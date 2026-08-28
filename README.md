@@ -122,7 +122,7 @@ Run `npm run dev` for the local documentation site.
 
 ## Deployment
 
-The static documentation site builds with `npm run build:site` into `dist/site/`. The factory deploys that directory.
+The static documentation site builds with `npm run build:site` into `dist/site/`.
 
 The site has no analytics or third-party runtime scripts. A service worker keeps public documentation available after the first visit.
 

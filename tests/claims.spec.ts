@@ -255,16 +255,66 @@ test('init creates starter rules from gh accounts @claim:starter-rules', async (
 });
 
 test('source and authentication prerequisites fail with guidance @claim:toolchain-prerequisites', async () => {
+  const nodeMajor = Number(process.versions.node.split('.')[0]);
+  expect(nodeMajor).toBeGreaterThanOrEqual(20);
   const go = await execFile('go', ['version']);
   const match = go.stdout.match(/go(\d+)\.(\d+)/);
   expect(match).not.toBeNull();
   expect(Number(match?.[1]) > 1 || Number(match?.[2]) >= 22).toBe(true);
+  const noGoPath = await temp('no-go-on-path');
+  await expect(execFile(process.execPath, ['scripts/check-go.mjs'], { env: { ...process.env, PATH: noGoPath } })).rejects.toMatchObject({
+    stderr: expect.stringContaining('Go 1.22+ is required for the CLI tests. Install Go from https://go.dev/dl/ and run npm test again.')
+  });
   const root = await temp('prerequisites');
   const gh = await fakeGH(root, `printf '%s' '{"hosts":{}}'`);
   const result = await command(['--config', join(root, 'generated.toml'), 'init'], { GH_AUTOSWITCH_GH: gh });
   expect(result.code).toBe(2);
   expect(result.stderr).toContain('run `gh auth login` first');
 });
+
+test('npm test invokes the documented quality checks @claim:full-suite', async () => {
+  const packageJson = JSON.parse(await readFile(join(process.cwd(), 'package.json'), 'utf8'));
+  expect(packageJson.scripts.test).toBe('npm run test:go && npm run test:site && npm run test:claims && npm run test:browser');
+  expect(packageJson.scripts['test:browser']).toContain('tests/browser.spec.ts');
+  const browserTests = await readFile(join(process.cwd(), 'tests/browser.spec.ts'), 'utf8');
+  const claimTests = await readFile(join(process.cwd(), 'tests/claims.spec.ts'), 'utf8');
+  expect(browserTests).toContain('AxeBuilder');
+  expect(claimTests).toContain('site-private');
+  expect(claimTests).toContain('offline-docs');
+});
+
+test('clean builds write the documented CLI and site artifacts @claim:build-artifacts', async () => {
+  await execFile('npm', ['run', 'build']);
+  const executable = join(process.cwd(), 'dist', 'bin', process.platform === 'win32' ? 'gh-account-autoswitch.exe' : 'gh-account-autoswitch');
+  expect((await stat(executable)).size).toBeGreaterThan(0);
+  await execFile('npm', ['run', 'build:site']);
+  for (const file of ['index.html', 'demo/index.html', 'privacy/index.html', 'terms/index.html', '404.html', 'sw.js']) {
+    expect((await stat(join(process.cwd(), 'dist', 'site', file))).size).toBeGreaterThan(0);
+  }
+});
+
+test('release packaging includes every supported binary, README, and license @claim:release-package', async () => {
+  await execFile('npm', ['run', 'package']);
+  const release = join(process.cwd(), 'dist', 'release');
+  const expected = [
+    'gh-account-autoswitch_0.1.0_darwin_amd64.tar.gz',
+    'gh-account-autoswitch_0.1.0_darwin_arm64.tar.gz',
+    'gh-account-autoswitch_0.1.0_linux_amd64.tar.gz',
+    'gh-account-autoswitch_0.1.0_linux_arm64.tar.gz',
+    'gh-account-autoswitch_0.1.0_windows_amd64.zip'
+  ];
+  const archives = (await readdir(release)).filter(name => name.endsWith('.tar.gz') || name.endsWith('.zip')).sort();
+  expect(archives).toEqual(expected);
+  for (const archive of archives) {
+    const result = archive.endsWith('.zip')
+      ? await execFile('unzip', ['-Z1', join(release, archive)])
+      : await execFile('tar', ['-tzf', join(release, archive)]);
+    const files = result.stdout.split('\n').filter(Boolean);
+    expect(files.some(file => /(?:^|\/)README\.md$/.test(file))).toBe(true);
+    expect(files.some(file => /(?:^|\/)LICENSE$/.test(file))).toBe(true);
+    expect(files.some(file => /(?:^|\/)gh-account-autoswitch(?:\.exe)?$/.test(file))).toBe(true);
+  }
+}, 180_000);
 
 test('all documented product commands emit parseable JSON @claim:json-output', async () => {
   const root = await temp('json-output');
@@ -361,7 +411,7 @@ test('docs reload offline after one visit @claim:offline-docs', async ({ page, c
   await context.setOffline(true);
   for (const [route, heading] of [
     ['/', 'Choose the right GitHub account'],
-    ['/demo/', 'Watch three repositories choose three accounts'],
+    ['/demo/', 'See three repository-to-account matches'],
     ['/privacy/', 'Privacy'],
     ['/terms/', 'Terms']
   ]) {

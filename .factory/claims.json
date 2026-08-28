@@ -78,10 +78,31 @@
   },
   {
     "id": "toolchain-prerequisites",
-    "claim": "Source development requires Go 1.22 or newer, and account discovery explains when GitHub CLI has no signed-in account.",
+    "claim": "Source development requires Node.js 20+ and Go 1.22+; a missing Go toolchain and GitHub CLI with no signed-in account give clear next steps.",
     "where": "install section, README",
     "test": "npm run test:claims -- --grep @claim:toolchain-prerequisites",
     "sandbox": "clean toolchain version check and fake gh with no accounts"
+  },
+  {
+    "id": "full-suite",
+    "claim": "npm test runs Go, static, claim, browser, accessibility, privacy, and offline checks.",
+    "where": "README development",
+    "test": "npm run test:claims -- --grep @claim:full-suite",
+    "sandbox": "package scripts and the checked-in browser and claim suites"
+  },
+  {
+    "id": "build-artifacts",
+    "claim": "npm run build writes the CLI and static documentation site to dist/; npm run build:site writes the site to dist/site/.",
+    "where": "README development and deployment",
+    "test": "npm run test:claims -- --grep @claim:build-artifacts",
+    "sandbox": "clean dist directory; production build; inspect executable and every public route"
+  },
+  {
+    "id": "release-package",
+    "claim": "npm run package creates supported release archives in dist/release/ with the executable, README, and MIT license.",
+    "where": "README development",
+    "test": "npm run test:claims -- --grep @claim:release-package",
+    "sandbox": "clean dist/release directory; package build; list every archive and its contents"
   },
   {
     "id": "json-output",
