@@ -76,6 +76,8 @@ test('mobile first screen and demo fit without page overflow', async ({ page }) 
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
   const demoDimensions = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(demoDimensions.scroll).toBe(demoDimensions.client);
+  const demoAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  expect(demoAxe.violations.filter(item => ['serious', 'critical'].includes(item.impact || ''))).toEqual([]);
 });
 
 test('keyboard focus and reduced motion are visible and respected', async ({ page }) => {
