@@ -47,6 +47,7 @@ On capable devices, the hero’s route pulse traverses each rail once on entranc
 
 - Hero: an original AI-generated, text-free wide illustration of two luminous data routes crossing a translucent policy prism toward a repository monolith. Generated for this project with `/opt/fleet/lib/gen-image.sh` (factory image deployment), then cropped/encoded locally to responsive WebP. Prompt is recorded below. Intended as explanatory atmosphere, with the exact routing logic expressed in adjacent semantic HTML.
 - Product mark, rule arrows, terminal glyphs, and small icons: hand-authored inline SVG/CSS from geometric primitives by the builder. MIT-licensed as part of this repository.
+- Social preview: a local 1200×630 crop of the original route landscape, created with ImageMagick. The 180×180 touch icon redraws the product mark with ImageMagick primitives. Both inherit the source asset provenance and ship with the repository.
 
 Hero prompt:
 

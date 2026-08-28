@@ -9,12 +9,19 @@
     "build:cli": "node scripts/build-cli.mjs",
     "build:site": "vite build --config vite.config.ts",
     "build": "npm run clean && npm run build:cli && npm run build:site",
-    "test:go": "go test ./...",
+    "check:go": "node scripts/check-go.mjs",
+    "test:go": "npm run check:go && go test ./...",
     "test:site": "npm run build:site && node --test tests/site.test.mjs",
-    "test": "npm run test:go && npm run test:site",
+    "pretest:claims": "npm run build",
+    "test:claims": "playwright test tests/claims.spec.ts",
+    "pretest:browser": "npm run build:site",
+    "test:browser": "playwright test tests/browser.spec.ts",
+    "test": "npm run test:go && npm run test:site && npm run test:claims && npm run test:browser",
     "package": "node scripts/package.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
     "vite": "^7.1.3"
   },
   "engines": {

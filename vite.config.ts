@@ -39,7 +39,7 @@ function releaseServiceWorker() {
         digest.update(await readFile(join(outputDirectory, file)));
       }
       const cache = `gh-account-autoswitch-${release}-${digest.digest('hex').slice(0, 12)}`;
-      const precache = [...new Set(['/', '/index.html', '/privacy/', '/terms/', ...outputFiles.map(file => `/${file}`)])];
+      const precache = [...new Set(['/', '/index.html', '/demo/', '/privacy/', '/terms/', '/404.html', ...outputFiles.map(file => `/${file}`)])];
       const template = await readFile('site/public/sw.js', 'utf8');
       await writeFile(
         join(outputDirectory, 'sw.js'),
@@ -60,8 +60,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         home: 'site/index.html',
+        demo: 'site/demo/index.html',
         privacy: 'site/privacy/index.html',
-        terms: 'site/terms/index.html'
+        terms: 'site/terms/index.html',
+        notFound: 'site/404.html'
       }
     }
   },
