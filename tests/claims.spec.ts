@@ -49,14 +49,17 @@ test('bundled demo selects three accounts @claim:demo-selection', async () => {
   expect(result.code).toBe(0);
   const demo = JSON.parse(result.stdout);
   expect(demo.token_requested).toBe(false);
-  expect(demo.results.map((item: any) => [item.repository, item.account, item.exit_code])).toEqual([
-    ['github.com/acme-corp/payments', 'dev@acme.example', 0],
-    ['github.com/octocat/dotfiles', 'octocat', 0],
-    ['github.corp.example/field-team/mobile', 'consultant@client.example', 0],
-    ['github.com/unknown-org/prototype', undefined, 3]
-  ]);
   const shipped = JSON.parse(await readFile(join(process.cwd(), 'examples/demo/repositories.json'), 'utf8'));
-  expect(shipped).toHaveLength(4);
+  expect(demo.results.map((item: any) => ({
+    remote: item.repository,
+    directory: item.directory,
+    ...(item.account ? { account: item.account } : {}),
+    ...(item.exit_code ? { exit_code: item.exit_code } : {})
+  }))).toEqual(shipped);
+  const shippedRules = await readFile(join(process.cwd(), 'examples/demo/gh-accounts.toml'), 'utf8');
+  for (const account of ['dev@acme.example', 'octocat', 'consultant@client.example']) {
+    expect(shippedRules).toContain(`account = "${account}"`);
+  }
 });
 
 test('which never asks for a token @claim:which-safe', async () => {
@@ -188,6 +191,30 @@ test('init creates starter rules from gh accounts @claim:starter-rules', async (
   expect(output).toContain('account = "octocat"');
   expect(output).toContain('account = "work-user"');
   expect((await stat(config)).mode & 0o777).toBe(0o600);
+});
+
+test('all documented product commands emit parseable JSON @claim:json-output', async () => {
+  const root = await temp('json-output');
+  const config = await configFor(root, 'work-user');
+  const gh = await fakeGH(root, `
+if [ "$1" = auth ] && [ "$2" = status ]; then printf '%s' '{"hosts":{"github.com":[{"login":"work-user"}]}}'; exit 0; fi
+if [ "$1" = auth ] && [ "$2" = token ]; then printf '%s' 'fixture-token'; exit 0; fi
+exit 0
+`);
+  const env = { GH_AUTOSWITCH_GH: gh };
+
+  const which = await command(['--config', config, '--cwd', root, 'which', '--json'], env);
+  expect(JSON.parse(which.stdout)).toMatchObject({ account: 'work-user' });
+
+  const init = await command(['--config', join(root, 'generated.toml'), 'init', '--dry-run', '--json'], env);
+  expect(JSON.parse(init.stdout)).toMatchObject({ written: false });
+
+  const demo = await command(['demo', '--json'], env);
+  expect(JSON.parse(demo.stdout)).toMatchObject({ demo: true, saved: false });
+
+  const run = await command(['--config', config, '--cwd', root, 'run', '--json', '--', 'status'], env);
+  expect(run.code).toBe(0);
+  expect(JSON.parse(run.stderr)).toMatchObject({ account: 'work-user' });
 });
 
 test('site makes only same-origin runtime requests @claim:site-private', async ({ page, context }) => {

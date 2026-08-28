@@ -6,6 +6,17 @@ import vm from 'node:vm';
 const root = new URL('../dist/site/', import.meta.url);
 const pages = ['index.html', 'demo/index.html', 'privacy/index.html', 'terms/index.html', '404.html'];
 
+test('every declared claim has exactly one tagged test', async () => {
+  const claims = JSON.parse(await readFile(new URL('../.factory/claims.json', import.meta.url), 'utf8'));
+  const claimTests = await readFile(new URL('claims.spec.ts', import.meta.url), 'utf8');
+  assert.equal(new Set(claims.map(claim => claim.id)).size, claims.length, 'claim IDs are unique');
+  for (const claim of claims) {
+    const tag = `@claim:${claim.id}`;
+    assert.equal(claimTests.split(tag).length - 1, 1, `${tag} appears exactly once`);
+    assert.equal(claim.test, `npm run test:claims -- --grep ${tag}`);
+  }
+});
+
 test('built routes have one accessible document skeleton', async () => {
   for (const page of pages) {
     const html = await readFile(new URL(page, root), 'utf8');
@@ -26,6 +37,7 @@ test('every route has complete local metadata', async () => {
     assert.match(html, /<meta name="description" content="[^"]+">/);
     assert.match(html, /<link rel="canonical" href="https:\/\/gh-account-autoswitch\.sociobot\.in\/[^"]*">/);
     assert.match(html, /<meta property="og:title" content="[^"]+">/);
+    assert.match(html, /<meta property="og:url" content="https:\/\/gh-account-autoswitch\.sociobot\.in\/[^"]*">/);
     assert.match(html, /<meta property="og:image" content="https:\/\/gh-account-autoswitch\.sociobot\.in\/social-card\.png">/);
     assert.match(html, /<meta name="twitter:card" content="summary_large_image">/);
     assert.match(html, /<link rel="apple-touch-icon" href="\/apple-touch-icon\.png">/);

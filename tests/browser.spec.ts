@@ -38,11 +38,17 @@ test('query demo entry is one click and reset stays isolated', async ({ page }) 
 });
 
 test('unknown paths use the product 404', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  page.on('pageerror', error => errors.push(error.message));
   const response = await page.goto('/no-such-page');
   expect(response?.status()).toBe(404);
   await expect(page).toHaveTitle('Page not found — gh-account-autoswitch');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('This page does not exist');
   await expect(page.getByRole('link', { name: 'Return home' })).toBeVisible();
+  const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  expect(result.violations.filter(item => ['serious', 'critical'].includes(item.impact || ''))).toEqual([]);
+  expect(errors.filter(message => !/Failed to load resource: the server responded with a status of 404/.test(message))).toEqual([]);
 });
 
 test('document navigation focuses its heading and browser history remains usable', async ({ page }) => {
@@ -88,13 +94,16 @@ test('keyboard focus and reduced motion are visible and respected', async ({ pag
   expect(motion.scroll).toBe('auto');
 });
 
-test('all same-origin links resolve', async ({ page, request }) => {
-  await page.goto('/');
-  const hrefs = await page.locator('a[href]').evaluateAll(elements => elements.map(element => (element as HTMLAnchorElement).href));
-  for (const href of new Set(hrefs)) {
-    const url = new URL(href);
-    if (url.origin !== 'http://127.0.0.1:4173') continue;
-    const response = await request.get(url.origin + url.pathname);
-    expect(response.status(), url.pathname).toBe(200);
+test('all same-origin links on every route resolve', async ({ page, request }) => {
+  for (const route of ['/', '/demo/', '/privacy/', '/terms/', '/no-such-page']) {
+    await page.goto(route);
+    const links = await page.locator('a[href]').evaluateAll(elements => elements.map(element => ({ href: (element as HTMLAnchorElement).href, raw: element.getAttribute('href') || '' })));
+    for (const { href, raw } of links) {
+      if (raw.startsWith('#')) continue;
+      const url = new URL(href);
+      if (url.origin !== 'http://127.0.0.1:4173') continue;
+      const response = await request.get(url.origin + url.pathname);
+      expect(response.status(), `${route} -> ${url.pathname}`).toBe(200);
+    }
   }
 });
