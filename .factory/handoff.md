@@ -1,28 +1,40 @@
-# Review 2 handoff
+# Polish 2 handoff
 
-**Work order:** `gh-account-autoswitch-review-2`
-**Role:** reviewer
-**Result:** **FAIL** — no product code was modified.
+**Work order:** `gh-account-autoswitch-polish-2`
+**Repair commit:** `26565fb037165f86b3a600723c90abc434322fdf`
+**Deployment:** Static Web Apps `216d1168-ab25-476f-9f39-08ae86a8bc7c`
+**Live:** <https://gh-account-autoswitch.sociobot.in/>
 
-## Completed review work
+## Done
 
-- Wrote `.factory/review-2.md` with the complete first-read, copy, demo, claim, history, routing, accessibility, link, and missed-leverage review.
-- Reviewed the live site cold at 390 px and desktop. Checked demo isolation/reset/start-for-real, direct routes, offline behavior, metadata, focus/history, and link status.
-- Read the brief, design, prior review, polish report, verification reports, and previous handoff. Rechecked every earlier finding.
-- In a fresh clone, using an isolated `/tmp` Go 1.27 toolchain, ran all 16 manifest commands individually, `npm run test:claims` (16/16), `npm test`, and `npm run build`. Ran the built CLI demo from a temporary directory.
+- Corrected the browser-demo privacy wording: no personal account/repository data is stored; the service worker caches public documentation for offline use.
+- Strengthened `@claim:browser-demo` to inspect all browser storage and verify its one versioned cache contains only same-origin, query-free paths declared by the generated worker precache.
+- Declared `/sw.js` in that precache and added the worker template to the cache fingerprint, so worker changes produce a distinct release cache.
+- Removed untestable affiliation/endorsement claims from README and Terms. The copy test now rejects their return in README or legal pages.
+- Updated the catalog description to a verb-first, 75-character sentence.
+- Added `.factory/polish-2.md`, including every review finding, exact change, test evidence, screenshots, and live check.
 
-## Remaining findings
+## Verification
 
-1. **F-2-1 BLOCKING:** `/privacy/` says the browser demo does not use browser storage, but its service worker writes public docs/demo assets into Cache Storage. Correct the privacy wording and add an explicit public-cache assertion to the demo privacy claim.
-2. **F-2-2 MINOR:** README says the project is independent/not affiliated with GitHub without a manifest claim. Remove the untestable statement.
+Fresh clone at the repair commit, with Node 22.23.2 and isolated Go 1.22.12:
 
-## Verify after repair
+- `npm ci` passed with 0 vulnerabilities.
+- Every one of the 16 manifest commands passed independently; aggregate `npm run test:claims` passed 16/16.
+- `npm test` passed: Go, static/document, claim, browser, Axe, privacy, offline, routing, mobile, keyboard, and link checks.
+- `go test -race ./...`, `go vet ./...`, `npm run build`, and `npm run package` passed. Release archives for Linux amd64/arm64, macOS amd64/arm64, and Windows amd64 were produced.
+- Factory cold-page verification wrote `/work/.evidence/gh-account-autoswitch-polish-2/verify.json` and desktop/mobile screenshots. It found title/lang/main/alt/console checks clean.
+- `npm run verify:live` passed 11 live checks: all routes at desktop/mobile, product 404, query demo/reset/start-for-real, and zero serious/critical Axe issues.
+- Lighthouse JSON at `/work/.evidence/gh-account-autoswitch-polish-2/lighthouse/report.json` reports 100 Performance, 100 Accessibility, 100 SEO; LCP 1,214 ms, CLS 0, TBT 83 ms. Lighthouse emitted a post-report target-crash exit after writing the report; the successful Playwright/Axe checks are the authoritative browser evidence.
+
+## Run and deploy
 
 ```sh
 npm ci
-npm run test:claims
 npm test
 npm run build
+npm run package
 ```
 
-Then, in a fresh Chromium context at `https://gh-account-autoswitch.sociobot.in/demo/`, await `navigator.serviceWorker.ready` and verify the corrected privacy copy plus the public-only Cache Storage assertion.
+Deployment uses the work-order static configuration: `npm ci && npm run build:site`, then deploy `dist/site` with `/opt/fleet/lib/deploy-static.sh gh-account-autoswitch /work/repo/dist/site`.
+
+**Known gaps:** none in the product. Do not publish the release archives from this worker; `npm run package` leaves them ready in `dist/release/`.
