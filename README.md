@@ -1,34 +1,47 @@
 # gh-account-autoswitch
 
-`gh-account-autoswitch` selects the right authenticated GitHub account for each repository, then runs the real `gh` with that account's token scoped to one child process. It never calls `gh auth switch`, never stores a token, and cannot change another shell or coding agent's active account.
+Choose the right GitHub account for each repository before a `gh` command runs.
 
-It is for developers who keep work, personal, or client GitHub identities on the same machine. Version `0.1.0` supports GitHub.com and GitHub Enterprise Server accounts already authenticated in `gh`.
+This command is for developers who use work, personal, or client GitHub accounts on one machine. It does not change the active account used by other commands.
+
+## Try the bundled sample
+
+The demo matches three sample repositories and shows one unmatched repository. It does not read your rules or request a token.
+
+```sh
+gh-account-autoswitch demo
+gh-account-autoswitch demo --json
+```
+
+The command creates a temporary workspace and removes it before exit. The shipped inputs are in [`examples/demo`](examples/demo).
+
+Open the one-click recording at <https://gh-account-autoswitch.sociobot.in/?demo=1>.
 
 ## Install
 
-Build from source (Go 1.22+):
+Source installation requires Go 1.22 or newer. Normal use also requires an authenticated [GitHub CLI](https://cli.github.com/).
 
 ```sh
 go install github.com/B-Divyesh/sf-gh-account-autoswitch/cmd/gh-account-autoswitch@latest
 ```
 
-Keep the real `gh` command and add a shell function that delegates through the shim:
+Keep the installed `gh` command. Add this function to your shell configuration:
 
 ```sh
 gh() { gh-account-autoswitch run -- "$@"; }
 ```
 
-Add that function to `.zshrc`, `.bashrc`, or the equivalent, then open a new shell. The shim locates the real `gh` binary with `PATH`, ignoring shell functions.
+Open a new shell after saving the function.
 
-## Usage
+## Create account rules
 
-Generate a starter config from the accounts already known to `gh`:
+Generate starter rules from the accounts reported by the GitHub CLI:
 
 ```sh
 gh-account-autoswitch init
 ```
 
-Edit `~/.config/gh-accounts.toml` and make each rule specific. Rules are checked in file order; the first matching rule wins.
+Review `~/.config/gh-accounts.toml` before running commands.
 
 ```toml
 version = 1
@@ -42,11 +55,18 @@ owner = "^acme-corp$"
 [[rules]]
 name = "Personal projects"
 account = "octocat"
-host = "github.com"
 directory = "~/src/personal/**"
 ```
 
-Explain the decision without retrieving a token or running `gh`:
+Each rule can match a host, owner, complete remote, local folder, or a combination. Every present field must match.
+
+Rules are checked from top to bottom. The first complete match wins.
+
+GitHub.com and GitHub Enterprise Server remotes work in SSH, `ssh://`, and HTTPS forms.
+
+## Check and run
+
+See the selected account without requesting a token:
 
 ```text
 $ gh-account-autoswitch which
@@ -56,65 +76,58 @@ Remote:    github.com/acme-corp/payments
 Directory: /Users/dev/src/acme/payments
 ```
 
-Machine-readable output is available for every product command:
-
-```sh
-gh-account-autoswitch which --json
-gh-account-autoswitch init --json --dry-run
-gh-account-autoswitch run --json -- repo view
-```
-
-Run a real command through the selected identity:
+Run the GitHub command with that account:
 
 ```sh
 gh-account-autoswitch run -- pr create
 ```
 
-`run --json` prints the selection as one JSON object to stderr before replacing the process; the real `gh` command still owns stdout and the final exit code.
+Add `--json` to `which`, `init`, `demo`, or `run` for machine-readable output.
 
-Useful overrides for automation:
+Use explicit paths in scripts when needed:
 
 ```sh
 gh-account-autoswitch --config ./fixtures/accounts.toml --cwd ./repo which
 GH_AUTOSWITCH_CONFIG=./accounts.toml gh-account-autoswitch which
 ```
 
-## Matching behavior
+## How tokens and accounts are handled
 
-A rule may contain any combination of:
+`which` never requests a token. `run` requests the selected account’s token from the installed GitHub CLI.
 
-- `host`: exact, case-insensitive remote host such as `github.com` or `github.corp.example`.
-- `owner`: Go regular expression matched against the remote owner.
-- `remote`: Go regular expression matched against canonical `host/owner/repo`.
-- `directory`: doublestar-style path glob (`*`, `?`, `**`) matched against the absolute working directory. A leading `~/` expands to the current home directory.
+The selected token exists only in the child command environment. It is not printed, logged, or saved in the rules file.
 
-All fields present in one rule must match. The first complete match wins. Remote URLs in SSH (`git@github.com:owner/repo.git`), `ssh://`, and HTTPS forms are understood. The `origin` remote is preferred; otherwise the first configured remote is used.
+The command never runs `gh auth switch`. An unmatched repository exits with code 3 and does not run `gh`.
 
-The command exits with code `2` for configuration or usage errors, `3` when no rule matches, `4` when a selected token cannot be obtained, and otherwise preserves the real `gh` exit code.
+Usage or configuration errors exit 2. A missing selected token exits 4. Other command failures preserve the GitHub CLI exit code.
 
-## Safety model
-
-The shim asks the real binary for a token using `gh auth token --hostname HOST --user ACCOUNT`, places it in `GH_TOKEN` (or `GH_ENTERPRISE_TOKEN` for GHES) only in the child environment, and then replaces itself with the real `gh`. Tokens are never printed, logged, or written to the config. Concurrent invocations do not share mutable state.
-
-Do not put tokens in `gh-accounts.toml`. The parser rejects unknown keys so mistakes fail closed. If an inherited `GH_TOKEN` or `GH_ENTERPRISE_TOKEN` is present, the shim replaces it only for the selected child process.
+The parser rejects unknown rule keys. Do not put tokens in `gh-accounts.toml`.
 
 ## Development
 
+Install Node.js 20+ and Go 1.22+ before running the full suite.
+
 ```sh
 npm ci
-npm test              # Go tests + static-site tests
-npm run build         # CLI binaries + site -> dist/
-npm run build:site    # site only -> dist/site/
+npm test
+npm run build
+npm run package
 ```
 
-Run the site locally with `npm run dev`. Package release archives with `npm run package`; outputs land in `dist/release/`. Registry and GitHub releases are owned by the factory; this repository does not publish itself.
+`npm test` runs Go, static, claim, browser, accessibility, privacy, and offline checks. A missing Go toolchain produces an actionable error.
+
+`npm run build` writes the CLI and static site to `dist/`. `npm run package` creates release archives in `dist/release/`.
+
+Run `npm run dev` for the local documentation site.
 
 ## Deployment
 
-The static documentation site deploys from `dist/site` to <https://gh-account-autoswitch.sociobot.in>. The CLI is distributed separately as versioned release archives. No runtime analytics, third-party scripts, remote fonts, user-data storage, or payment system are included.
+The static documentation site builds with `npm run build:site` into `dist/site/`. The factory deploys that directory.
 
-## Project status
+The site has no analytics or third-party runtime scripts. A service worker keeps public documentation available after the first visit.
 
-This is an independent community utility, not an official GitHub project. If `gh` ships safe contextual account selection natively, the project will document migration and enter maintenance mode rather than compete with the built-in behavior.
+## License and status
 
-See [CHANGELOG.md](CHANGELOG.md) for releases. MIT licensed.
+The project uses the MIT License. It is independent community software and is not affiliated with GitHub.
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes.

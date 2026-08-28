@@ -1,0 +1,6 @@
+[
+  {"remote":"github.com/acme-corp/payments","directory":"work/payments","account":"dev@acme.example"},
+  {"remote":"github.com/octocat/dotfiles","directory":"personal/dotfiles","account":"octocat"},
+  {"remote":"github.corp.example/field-team/mobile","directory":"client/mobile","account":"consultant@client.example"},
+  {"remote":"github.com/unknown-org/prototype","directory":"scratch/prototype","exit_code":3}
+]

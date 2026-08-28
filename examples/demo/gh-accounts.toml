@@ -1,0 +1,19 @@
+# Bundled demo rules. The CLI replaces ${DEMO_ROOT} with a temporary directory.
+version = 1
+
+[[rules]]
+name = "Acme work"
+account = "dev@acme.example"
+host = "github.com"
+owner = "^acme-corp$"
+
+[[rules]]
+name = "Personal projects"
+account = "octocat"
+directory = "${DEMO_ROOT}/personal/**"
+
+[[rules]]
+name = "Client enterprise"
+account = "consultant@client.example"
+host = "github.corp.example"
+remote = "^github\\.corp\\.example/field-team/"

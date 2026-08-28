@@ -49,6 +49,9 @@ func execute(args []string, stdout, stderr io.Writer) error {
 		fmt.Fprintf(stdout, "gh-account-autoswitch %s\n", version)
 		return nil
 	}
+	if command == "demo" {
+		return runDemo(opts, stdout)
+	}
 	configPath, err := resolveConfigPath(opts.config)
 	if err != nil {
 		return err
@@ -136,7 +139,7 @@ func parseArgs(args []string) (options, string, []string, error) {
 			} else {
 				opts.cwd = args[i]
 			}
-		case "which", "init", "run":
+		case "which", "init", "run", "demo":
 			if command != "" {
 				return opts, "", nil, &autoswitch.ExitError{Code: 2, Err: fmt.Errorf("only one command may be used")}
 			}
@@ -156,6 +159,90 @@ func parseArgs(args []string) (options, string, []string, error) {
 		return opts, "", nil, &autoswitch.ExitError{Code: 2, Err: fmt.Errorf("--dry-run and --force are only valid with init")}
 	}
 	return opts, command, rest, nil
+}
+
+type demoResult struct {
+	Repository string `json:"repository"`
+	Directory  string `json:"directory"`
+	Account    string `json:"account,omitempty"`
+	Rule       string `json:"rule,omitempty"`
+	ExitCode   int    `json:"exit_code"`
+}
+
+func runDemo(opts options, stdout io.Writer) error {
+	workspace, err := os.MkdirTemp("", "gh-account-autoswitch-demo-")
+	if err != nil {
+		return fmt.Errorf("create demo workspace: %w", err)
+	}
+	defer os.RemoveAll(workspace)
+
+	configPath := filepath.Join(workspace, "gh-accounts.toml")
+	configText := fmt.Sprintf(`version = 1
+
+[[rules]]
+name = "Acme work"
+account = "dev@acme.example"
+host = "github.com"
+owner = "^acme-corp$"
+
+[[rules]]
+name = "Personal projects"
+account = "octocat"
+directory = %q
+
+[[rules]]
+name = "Client enterprise"
+account = "consultant@client.example"
+host = "github.corp.example"
+remote = "^github\\.corp\\.example/field-team/"
+`, filepath.ToSlash(filepath.Join(workspace, "personal", "**")))
+	if err := os.WriteFile(configPath, []byte(configText), 0o600); err != nil {
+		return fmt.Errorf("write demo config: %w", err)
+	}
+	config, err := autoswitch.LoadConfig(configPath)
+	if err != nil {
+		return err
+	}
+
+	repositories := []autoswitch.Repository{
+		{Directory: filepath.Join(workspace, "work", "payments"), Host: "github.com", Owner: "acme-corp", Name: "payments", Canonical: "github.com/acme-corp/payments"},
+		{Directory: filepath.Join(workspace, "personal", "dotfiles"), Host: "github.com", Owner: "octocat", Name: "dotfiles", Canonical: "github.com/octocat/dotfiles"},
+		{Directory: filepath.Join(workspace, "client", "mobile"), Host: "github.corp.example", Owner: "field-team", Name: "mobile", Canonical: "github.corp.example/field-team/mobile"},
+		{Directory: filepath.Join(workspace, "scratch", "prototype"), Host: "github.com", Owner: "unknown-org", Name: "prototype", Canonical: "github.com/unknown-org/prototype"},
+	}
+	results := make([]demoResult, 0, len(repositories))
+	for _, repo := range repositories {
+		result := demoResult{Repository: repo.Canonical, Directory: strings.TrimPrefix(filepath.ToSlash(repo.Directory), filepath.ToSlash(workspace)+"/")}
+		selection, selectErr := autoswitch.Select(config, repo)
+		if selectErr != nil {
+			var exit *autoswitch.ExitError
+			if !errors.As(selectErr, &exit) || exit.Code != 3 {
+				return selectErr
+			}
+			result.ExitCode = 3
+		} else {
+			result.Account, result.Rule = selection.Account, selection.Rule
+		}
+		results = append(results, result)
+	}
+
+	if opts.json {
+		return writeJSON(stdout, map[string]any{
+			"demo": true, "saved": false, "workspace": workspace, "workspace_removed": true,
+			"token_requested": false, "results": results,
+		})
+	}
+	fmt.Fprintln(stdout, "Demo — bundled sample data; no token is requested and nothing is saved.")
+	fmt.Fprintln(stdout, "REPOSITORY                                      ACCOUNT                       RULE")
+	for _, result := range results {
+		if result.ExitCode == 3 {
+			fmt.Fprintf(stdout, "%-47s %-29s %s\n", result.Repository, "—", "no match · exit 3")
+			continue
+		}
+		fmt.Fprintf(stdout, "%-47s %-29s %s\n", result.Repository, result.Account, result.Rule)
+	}
+	fmt.Fprintf(stdout, "Temporary workspace: %s (removed)\n", workspace)
+	return nil
 }
 
 func resolveConfigPath(value string) (string, error) {
@@ -219,12 +306,14 @@ Usage:
   gh-account-autoswitch [global options] which [--json]
   gh-account-autoswitch [global options] run [--json] -- <gh arguments...>
   gh-account-autoswitch [global options] init [--dry-run] [--force] [--json]
+  gh-account-autoswitch demo [--json]
   gh-account-autoswitch version [--json]
 
 Commands:
   which     Explain the first matching rule. Does not retrieve a token.
   run       Retrieve that account's token and run the real gh in a child process.
   init      Generate rules from accounts reported by gh auth status.
+  demo      Match bundled samples in a temporary workspace. Never calls gh.
 
 Global options:
   --config PATH   Config file (default: ~/.config/gh-accounts.toml)
