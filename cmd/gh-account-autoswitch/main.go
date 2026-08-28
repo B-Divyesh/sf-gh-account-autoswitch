@@ -174,7 +174,12 @@ func runDemo(opts options, stdout io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("create demo workspace: %w", err)
 	}
-	defer os.RemoveAll(workspace)
+	cleaned := false
+	defer func() {
+		if !cleaned {
+			_ = os.RemoveAll(workspace)
+		}
+	}()
 
 	configPath := filepath.Join(workspace, "gh-accounts.toml")
 	configText := fmt.Sprintf(`version = 1
@@ -225,6 +230,10 @@ remote = "^github\\.corp\\.example/field-team/"
 		}
 		results = append(results, result)
 	}
+	if err := os.RemoveAll(workspace); err != nil {
+		return fmt.Errorf("remove demo workspace: %w", err)
+	}
+	cleaned = true
 
 	if opts.json {
 		return writeJSON(stdout, map[string]any{

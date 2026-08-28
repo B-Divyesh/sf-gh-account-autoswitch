@@ -4,6 +4,10 @@ All notable changes follow Keep a Changelog and semantic versioning.
 
 ## [Unreleased]
 
+### Changed
+
+- Strengthened the isolated demo, route focus, metadata consistency, and claim-by-claim acceptance coverage.
+
 ## [0.1.0] - 2026-08-27
 
 ### Added

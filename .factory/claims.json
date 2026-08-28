@@ -1,14 +1,114 @@
 [
-  {"id":"demo-selection","claim":"The bundled demo matches three repositories to three accounts without requesting a token.","where":"first screen, demo page, README","test":"npm run test:claims -- --grep @claim:demo-selection","sandbox":"built CLI; bundled examples; fresh temporary workspace"},
-  {"id":"which-safe","claim":"which reports the winning rule without asking GitHub CLI for a token.","where":"How it works, README","test":"npm run test:claims -- --grep @claim:which-safe","sandbox":"temporary rules and fake gh invocation log"},
-  {"id":"command-isolation","claim":"run gives the selected token only to its child command and does not switch the active GitHub account.","where":"landing page, privacy, README","test":"npm run test:claims -- --grep @claim:command-isolation","sandbox":"temporary rules, fake gh credential and child fixtures, inherited token variables"},
-  {"id":"token-confidentiality","claim":"The command does not print, log, or save the selected token.","where":"landing page, privacy, README","test":"npm run test:claims -- --grep @claim:token-confidentiality","sandbox":"temporary rules and fake gh returning a canary token; scan output and files"},
-  {"id":"matching-rules","claim":"Rules match host, owner, remote, and folder in file order; the first complete match wins.","where":"How it works, matching rules, README","test":"npm run test:claims -- --grep @claim:matching-rules","sandbox":"temporary Git repositories and representative rule file"},
-  {"id":"exit-codes","claim":"Usage errors exit 2, no match exits 3, missing tokens exit 4, and run preserves the GitHub CLI exit code.","where":"landing page, README","test":"npm run test:claims -- --grep @claim:exit-codes","sandbox":"temporary rules and fake gh outcomes"},
-  {"id":"demo-isolation","claim":"demo reads no real configuration, requests no token, and removes its temporary workspace.","where":"demo page, privacy, README","test":"npm run test:claims -- --grep @claim:demo-isolation","sandbox":"fresh home/config directory with sentinels and hostile inherited environment"},
-  {"id":"starter-rules","claim":"init creates starter rules from accounts reported by the installed GitHub CLI.","where":"install section, README","test":"npm run test:claims -- --grep @claim:starter-rules","sandbox":"temporary config and fake gh auth status response"},
-  {"id":"json-output","claim":"which, init, demo, and run provide machine-readable JSON output.","where":"README, CLI help","test":"npm run test:claims -- --grep @claim:json-output","sandbox":"built CLI; temporary rules and fake GitHub CLI fixtures; parse every command output as JSON"},
-  {"id":"site-private","claim":"The website has no analytics or third-party runtime requests and sends no account data.","where":"first screen, privacy, README","test":"npm run test:claims -- --grep @claim:site-private","sandbox":"fresh browser context with every request captured through the demo flow"},
-  {"id":"offline-docs","claim":"The documentation works offline after the first visit.","where":"first screen, privacy, README","test":"npm run test:claims -- --grep @claim:offline-docs","sandbox":"fresh browser context; service worker ready; offline reload"},
-  {"id":"free-license","claim":"The command is free under the MIT License.","where":"first screen, terms, README","test":"npm run test:claims -- --grep @claim:free-license","sandbox":"built landing page and repository LICENSE"}
+  {
+    "id": "demo-selection",
+    "claim": "The bundled demo matches three repositories to three accounts without requesting a token.",
+    "where": "first screen, demo page, README",
+    "test": "npm run test:claims -- --grep @claim:demo-selection",
+    "sandbox": "built CLI; bundled examples; fresh temporary workspace"
+  },
+  {
+    "id": "browser-demo",
+    "claim": "The ?demo=1 entry opens sample data with a persistent banner, reset control, and no browser storage.",
+    "where": "first screen, demo page, README",
+    "test": "npm run test:claims -- --grep @claim:browser-demo",
+    "sandbox": "fresh browser context; query entry; replay and reset flow"
+  },
+  {
+    "id": "demo-isolation",
+    "claim": "demo reads no real configuration, requests no token, and removes its temporary workspace.",
+    "where": "demo page, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:demo-isolation",
+    "sandbox": "fresh home/config directory with sentinels and hostile inherited environment"
+  },
+  {
+    "id": "which-safe",
+    "claim": "which reports the winning rule without asking GitHub CLI for a token.",
+    "where": "How it works, README",
+    "test": "npm run test:claims -- --grep @claim:which-safe",
+    "sandbox": "temporary rules and fake gh invocation log"
+  },
+  {
+    "id": "command-isolation",
+    "claim": "Concurrent run commands give each selected token only to its child and never switch the active GitHub account.",
+    "where": "landing page, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:command-isolation",
+    "sandbox": "two concurrent temporary repositories; fake gh credential and child fixtures; inherited token variables"
+  },
+  {
+    "id": "token-confidentiality",
+    "claim": "The command does not print, log, or save the selected token.",
+    "where": "landing page, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:token-confidentiality",
+    "sandbox": "temporary rules and fake gh returning a canary token; scan output and files"
+  },
+  {
+    "id": "matching-rules",
+    "claim": "Rules match host, owner, remote, and folder in file order; the first complete match wins.",
+    "where": "How it works, matching rules, README",
+    "test": "npm run test:claims -- --grep @claim:matching-rules",
+    "sandbox": "temporary Git repositories and representative rule file"
+  },
+  {
+    "id": "remote-formats",
+    "claim": "GitHub.com and GitHub Enterprise Server remotes work in SCP-style SSH, ssh://, and HTTPS forms.",
+    "where": "README",
+    "test": "npm run test:claims -- --grep @claim:remote-formats",
+    "sandbox": "three temporary Git repositories with GitHub.com and enterprise remotes"
+  },
+  {
+    "id": "exit-codes",
+    "claim": "Usage errors exit 2, no match exits 3, missing tokens exit 4, and run preserves the GitHub CLI exit code.",
+    "where": "landing page, README, CLI help",
+    "test": "npm run test:claims -- --grep @claim:exit-codes",
+    "sandbox": "temporary rules and fake gh outcomes"
+  },
+  {
+    "id": "config-safety",
+    "claim": "Unknown rule keys stop with a configuration error before GitHub CLI runs.",
+    "where": "README",
+    "test": "npm run test:claims -- --grep @claim:config-safety",
+    "sandbox": "temporary invalid rules file and fake gh invocation sentinel"
+  },
+  {
+    "id": "starter-rules",
+    "claim": "init creates private starter rules from accounts reported by the installed GitHub CLI.",
+    "where": "install section, README",
+    "test": "npm run test:claims -- --grep @claim:starter-rules",
+    "sandbox": "temporary config and fake gh auth status response"
+  },
+  {
+    "id": "toolchain-prerequisites",
+    "claim": "Source development requires Go 1.22 or newer, and account discovery explains when GitHub CLI has no signed-in account.",
+    "where": "install section, README",
+    "test": "npm run test:claims -- --grep @claim:toolchain-prerequisites",
+    "sandbox": "clean toolchain version check and fake gh with no accounts"
+  },
+  {
+    "id": "json-output",
+    "claim": "which, init, demo, and run provide machine-readable JSON output.",
+    "where": "README, CLI help",
+    "test": "npm run test:claims -- --grep @claim:json-output",
+    "sandbox": "built CLI; temporary rules and fake GitHub CLI fixtures; parse every command output as JSON"
+  },
+  {
+    "id": "site-private",
+    "claim": "The website has no analytics or third-party runtime requests and sends no account data.",
+    "where": "first screen, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:site-private",
+    "sandbox": "fresh browser context with every request captured through the full query-demo flow"
+  },
+  {
+    "id": "offline-docs",
+    "claim": "The documentation works offline after the first visit.",
+    "where": "first screen, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:offline-docs",
+    "sandbox": "fresh browser context; service worker ready; offline reload"
+  },
+  {
+    "id": "free-license",
+    "claim": "The command is free under the MIT License.",
+    "where": "first screen, terms, README",
+    "test": "npm run test:claims -- --grep @claim:free-license",
+    "sandbox": "built landing page and repository LICENSE"
+  }
 ]

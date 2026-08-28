@@ -1,1 +1,1 @@
-Choose the right GitHub account for each repository before a gh command runs.
+Choose the right GitHub account for each repository without changing your active account.

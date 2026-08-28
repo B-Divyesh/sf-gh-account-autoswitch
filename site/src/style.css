@@ -19,6 +19,7 @@
 }
 
 * { box-sizing: border-box; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 html { scroll-behavior: smooth; background: var(--night-950); }
 body { margin: 0; min-width: 320px; overflow-x: clip; background: var(--night-950); color: var(--mist-100); font-size: 18px; line-height: 1.55; }
 a { color: inherit; }
@@ -112,7 +113,7 @@ h1 em { color: var(--lime-400); font-style: normal; font-weight: inherit; }
 .site-footer { border-top: 1px solid var(--line); }.footer-grid { min-height: 180px; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; gap: 24px; }.footer-grid p { color: var(--mist-300); font-size: 13px; text-align: center; }.footer-grid nav { display: flex; justify-content: flex-end; gap: 24px; }.footer-grid nav a { min-height: 44px; display: inline-flex; align-items: center; color: var(--mist-300); font-size: 14px; }
 .update-notice { position: fixed; z-index: 30; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 16px; max-width: calc(100% - 32px); min-height: 60px; padding: 8px 8px 8px 18px; border: 1px solid rgba(108,233,226,.55); border-radius: 12px; color: var(--mist-100); background: #0b1715; box-shadow: 0 16px 44px rgba(0,0,0,.42); }.update-notice p { margin: 0; font-size: 14px; }.update-notice button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 8px; color: var(--night-950); background: var(--lime-400); cursor: pointer; font-weight: 750; }
 
-.legal-main { min-height: calc(100vh - 256px); padding-block: 88px 120px; }.legal-main h1 { font-size: clamp(42px, 6vw, 68px); }.legal-copy { max-width: 720px; }.legal-copy h2 { margin: 48px 0 12px; font-size: 24px; }.legal-copy p, .legal-copy li { color: var(--mist-300); }.back-link { min-height: 44px; display: inline-flex; align-items:center; margin-bottom: 40px; color: var(--cyan-300); }
+.legal-main { min-height: calc(100vh - 256px); padding-block: 88px 120px; }.legal-main h1 { font-size: clamp(42px, 6vw, 68px); }.legal-copy { max-width: 720px; }.legal-copy h2 { margin: 48px 0 12px; font-size: 24px; }.legal-copy p, .legal-copy li { color: var(--mist-300); }.legal-copy a { min-height: 44px; display: inline-flex; align-items: center; text-underline-offset: 4px; }.back-link { min-height: 44px; display: inline-flex; align-items:center; margin-bottom: 40px; color: var(--cyan-300); }
 
 .demo-banner { position: sticky; z-index: 80; top: 0; min-height: 64px; padding: 8px max(16px, calc((100% - 1184px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--night-950); background: var(--lime-400); box-shadow: 0 8px 28px rgba(0,0,0,.28); font-size: 14px; }
 .demo-banner div { display: flex; gap: 10px; }.demo-banner button, .demo-banner a, .demo-stage button { min-height: 44px; padding: 0 16px; display: inline-flex; align-items: center; border: 1px solid rgba(7,16,15,.55); border-radius: 9px; color: var(--night-950); background: transparent; cursor: pointer; font-weight: 760; text-decoration: none; }

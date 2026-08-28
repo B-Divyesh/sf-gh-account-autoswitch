@@ -15,6 +15,26 @@ test('every declared claim has exactly one tagged test', async () => {
     assert.equal(claimTests.split(tag).length - 1, 1, `${tag} appears exactly once`);
     assert.equal(claim.test, `npm run test:claims -- --grep ${tag}`);
   }
+  const tagged = [...claimTests.matchAll(/@claim:([a-z0-9-]+)/g)].map(match => match[1]).sort();
+  assert.deepEqual(tagged, claims.map(claim => claim.id).sort(), 'every claim test is declared');
+});
+
+test('first screen and catalog use the reviewed plain wording', async () => {
+  const html = await readFile(new URL('../site/index.html', import.meta.url), 'utf8');
+  for (const required of [
+    'Choose the right GitHub account per repository',
+    'For developers with work and personal GitHub accounts, it picks one account for each <code>gh</code> command.',
+    'Try it with sample data',
+    'Shows three repository-to-account matches; nothing is saved.',
+    'Free under MIT',
+    'No site analytics',
+    'Offline after one visit'
+  ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  const catalog = (await readFile(new URL('../.factory/catalog-description.txt', import.meta.url), 'utf8')).trim();
+  assert.ok(catalog.startsWith('Choose '), 'catalog description starts with a verb');
+  assert.ok(catalog.length <= 120, `catalog description is ${catalog.length} characters`);
+  const copy = `${html}\n${await readFile(new URL('../README.md', import.meta.url), 'utf8')}`;
+  assert.doesNotMatch(copy, /\b(?:leverage|seamless|effortless|robust|powerful|intuitive|reimagine|supercharge|unlock|delightful|journey|ecosystem|AI-powered)\b/i);
 });
 
 test('built routes have one accessible document skeleton', async () => {
@@ -27,6 +47,7 @@ test('built routes have one accessible document skeleton', async () => {
     assert.match(html, /class="skip-link"/);
     assert.match(html, /<header class="site-header">/);
     assert.match(html, /<footer class="site-footer">/);
+    assert.equal((html.match(/class="brand-mark"/g) || []).length, 2, `${page}: consistent header and footer marks`);
     assert.match(html, /Built by Param Factory · v0\.1\.0/);
   }
 });
@@ -37,10 +58,19 @@ test('every route has complete local metadata', async () => {
     assert.match(html, /<meta name="description" content="[^"]+">/);
     assert.match(html, /<link rel="canonical" href="https:\/\/gh-account-autoswitch\.sociobot\.in\/[^"]*">/);
     assert.match(html, /<meta property="og:title" content="[^"]+">/);
+    assert.match(html, /<meta property="og:description" content="[^"]+">/);
     assert.match(html, /<meta property="og:url" content="https:\/\/gh-account-autoswitch\.sociobot\.in\/[^"]*">/);
     assert.match(html, /<meta property="og:image" content="https:\/\/gh-account-autoswitch\.sociobot\.in\/social-card\.png">/);
     assert.match(html, /<meta name="twitter:card" content="summary_large_image">/);
+    assert.match(html, /<meta name="twitter:title" content="[^"]+">/);
+    assert.match(html, /<meta name="twitter:description" content="[^"]+">/);
+    assert.match(html, /<meta name="twitter:image" content="https:\/\/gh-account-autoswitch\.sociobot\.in\/social-card\.png">/);
     assert.match(html, /<link rel="apple-touch-icon" href="\/apple-touch-icon\.png">/);
+    assert.match(html, /<link rel="manifest" href="\/manifest\.webmanifest">/);
+    const title = html.match(/<title>([^<]+)<\/title>/)?.[1] || '';
+    const description = html.match(/<meta name="description" content="([^"]+)">/)?.[1] || '';
+    assert.ok(title.length <= 60, `${page}: title is ${title.length} characters`);
+    assert.ok(description.length <= 155, `${page}: description is ${description.length} characters`);
   }
   assert.equal((await stat(new URL('social-card.png', root))).size > 0, true);
   assert.equal((await stat(new URL('apple-touch-icon.png', root))).size > 0, true);

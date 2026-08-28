@@ -6,7 +6,7 @@ Open <https://gh-account-autoswitch.sociobot.in/?demo=1>. The query entry redire
 
 The page shows a recorded run with three matches and one expected no-match result. The persistent banner contains **Reset demo** and **Start for real**.
 
-Reset restores the initial recording and heading focus. The browser demo uses no `localStorage`, `sessionStorage`, IndexedDB, account data, or repository data.
+Reset restores the initial recording, announces the reset, and moves focus to the heading. The browser demo uses no `localStorage`, `sessionStorage`, IndexedDB, account data, or repository data.
 
 ## CLI entry
 
@@ -17,7 +17,7 @@ gh-account-autoswitch demo
 gh-account-autoswitch demo --json
 ```
 
-The command creates a unique operating-system temporary directory. It writes only sample rules inside that directory, runs the production matcher, prints four results, and removes the directory before exit.
+The command creates a unique operating-system temporary directory. It writes only sample rules inside that directory, runs the production matcher, prints four results, and verifies the directory was removed before reporting success.
 
 The demo does not resolve the default config path, inspect the current repository, find `gh`, request a token, or change the environment. The real home directory and GitHub CLI authentication are outside its boundary.
 

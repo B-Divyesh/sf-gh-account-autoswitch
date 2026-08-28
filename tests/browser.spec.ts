@@ -5,18 +5,21 @@ test('all routes render without console errors and pass serious accessibility ch
   const errors: string[] = [];
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   page.on('pageerror', error => errors.push(error.message));
-  for (const route of ['/', '/demo/', '/privacy/', '/terms/']) {
-    const response = await page.goto(route);
-    expect(response?.status()).toBe(200);
-    await page.evaluate(async () => { await navigator.serviceWorker.ready; });
-    await expect.poll(async () => {
-      try { return await page.evaluate(() => Boolean(navigator.serviceWorker.controller)); } catch { return false; }
-    }).toBe(true);
-    await expect(page.locator('main')).toHaveCount(1);
-    await expect(page.locator('h1')).toHaveCount(1);
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-    const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-    expect(result.violations.filter(item => ['serious', 'critical'].includes(item.impact || ''))).toEqual([]);
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    for (const route of ['/', '/demo/', '/privacy/', '/terms/']) {
+      const response = await page.goto(route);
+      expect(response?.status()).toBe(200);
+      await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+      await expect.poll(async () => {
+        try { return await page.evaluate(() => Boolean(navigator.serviceWorker.controller)); } catch { return false; }
+      }).toBe(true);
+      await expect(page.locator('main')).toHaveCount(1);
+      await expect(page.locator('h1')).toHaveCount(1);
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+      expect(result.violations.filter(item => ['serious', 'critical'].includes(item.impact || '')), `${route} at ${viewport.width}px`).toEqual([]);
+    }
   }
   expect(errors).toEqual([]);
 });
@@ -30,6 +33,8 @@ test('query demo entry is one click and reset stays isolated', async ({ page }) 
   await page.getByRole('button', { name: 'Replay recording' }).click();
   await expect(page.getByRole('button', { name: 'Recording replayed' })).toBeVisible();
   await page.getByRole('button', { name: 'Reset demo' }).click();
+  await expect(page.getByRole('button', { name: 'Replay recording' })).toBeVisible();
+  await expect(page.getByText('Reset restored the starting sample.')).toHaveText('Reset restored the starting sample.');
   await expect(page.locator('h1')).toBeFocused();
   await expect(page.getByRole('link', { name: 'Start for real' })).toHaveAttribute('href', '/#install');
   expect(await page.evaluate(() => localStorage.length + sessionStorage.length)).toBe(0);
@@ -58,12 +63,13 @@ test('document navigation focuses its heading and browser history remains usable
   await expect(page.locator('h1')).toBeFocused();
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('h1')).toBeFocused();
   await page.goForward();
   await expect(page).toHaveURL(/\/privacy\/$/);
   await expect(page.locator('h1')).toBeFocused();
 });
 
-test('mobile first screen and demo fit without page overflow', async ({ page }) => {
+test('mobile routes fit without page overflow and keep primary actions visible', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.locator('h1')).toHaveText('Choose the right GitHub account per repository');
@@ -72,12 +78,15 @@ test('mobile first screen and demo fit without page overflow', async ({ page }) 
   expect(dimensions.scroll).toBe(dimensions.client);
   const firstFactsBottom = await page.locator('.trust-list').evaluate(element => element.getBoundingClientRect().bottom);
   expect(firstFactsBottom).toBeLessThanOrEqual(844);
+  for (const route of ['/demo/', '/privacy/', '/terms/', '/no-such-page']) {
+    await page.goto(route);
+    const routeDimensions = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+    expect(routeDimensions.scroll, route).toBe(routeDimensions.client);
+  }
   await page.goto('/demo/');
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
-  const demoDimensions = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
-  expect(demoDimensions.scroll).toBe(demoDimensions.client);
-  const demoAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-  expect(demoAxe.violations.filter(item => ['serious', 'critical'].includes(item.impact || ''))).toEqual([]);
+  await expect(page.getByRole('button', { name: 'Reset demo' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start for real' })).toBeVisible();
 });
 
 test('keyboard focus and reduced motion are visible and respected', async ({ page }) => {

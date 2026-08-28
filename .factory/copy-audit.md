@@ -52,6 +52,7 @@ The headline states the job in eight words. The following sentence names develop
 | The fourth repository proves that no match stops with exit code 3. | 12 |
 | The command never opens your rules file or asks `gh` for a token. | 13 |
 | The command creates and removes its own temporary workspace. | 9 |
+| Reset restored the starting sample. | 5 |
 
 ## Legal and README check
 

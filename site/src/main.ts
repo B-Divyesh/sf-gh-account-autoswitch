@@ -40,19 +40,24 @@ const resetDemo = () => {
     picker.dispatchEvent(new Event('change'));
   }
   document.querySelector<HTMLElement>('[data-recording]')?.classList.remove('replaying');
+  if (replay) replay.textContent = 'Replay recording';
+  if (replayTimer) window.clearTimeout(replayTimer);
+  const demoStatus = document.querySelector<HTMLElement>('[data-demo-status]');
+  if (demoStatus) demoStatus.textContent = 'Reset restored the starting sample.';
   document.querySelector<HTMLElement>('.demo-intro h1')?.focus();
 };
 document.querySelector<HTMLButtonElement>('[data-demo-reset]')?.addEventListener('click', resetDemo);
 
 const replay = document.querySelector<HTMLButtonElement>('[data-demo-replay]');
 const recording = document.querySelector<HTMLElement>('[data-recording]');
+let replayTimer: number | undefined;
 replay?.addEventListener('click', () => {
   if (!recording) return;
   recording.classList.remove('replaying');
   void recording.offsetWidth;
   recording.classList.add('replaying');
   replay.textContent = 'Recording replayed';
-  window.setTimeout(() => { replay.textContent = 'Replay recording'; }, 1800);
+  replayTimer = window.setTimeout(() => { replay.textContent = 'Replay recording'; }, 1800);
 });
 
 const status = document.querySelector<HTMLElement>('[data-copy-status]');
@@ -80,11 +85,16 @@ window.addEventListener('online', updateConnection);
 window.addEventListener('offline', updateConnection);
 updateConnection();
 
+const focusRouteHeading = () => window.requestAnimationFrame(() => document.querySelector<HTMLElement>('main h1')?.focus());
 try {
   const referrer = document.referrer ? new URL(document.referrer) : undefined;
-  if (referrer?.origin === window.location.origin && referrer.pathname !== window.location.pathname) {
-    window.requestAnimationFrame(() => document.querySelector<HTMLElement>('main h1')?.focus());
+  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+  if ((referrer?.origin === window.location.origin && referrer.pathname !== window.location.pathname) || navigation?.type === 'back_forward') {
+    focusRouteHeading();
   }
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) focusRouteHeading();
+  });
 } catch {
   // A malformed referrer must never block the page.
 }

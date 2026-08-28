@@ -55,4 +55,4 @@ Hero prompt:
 
 ## Responsive intent
 
-At 390px, the navigation keeps only the mark, “How it works,” and the install action; the hero becomes one column, the artwork crops around the prism, rule comparisons stack, and terminal lines scroll horizontally without shrinking. Decorative grid density and glass blur reduce to protect legibility and GPU cost. No content or action is hidden behind fixed UI.
+At 390px, the navigation keeps only the mark, Demo, and Install so the try-first and real-start paths stay visible. The hero becomes one column, the artwork crops around the prism, rule comparisons stack, and terminal lines scroll horizontally without shrinking. Decorative grid density and glass blur reduce to protect legibility and GPU cost. No content or action is hidden behind fixed UI.
