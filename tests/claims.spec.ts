@@ -356,6 +356,21 @@ test('site makes only same-origin runtime requests @claim:site-private', async (
 });
 
 test('query demo opens the isolated sample, caches only public files, and resets it @claim:browser-demo', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(async () => {
+    try { return await page.evaluate(() => Boolean(navigator.serviceWorker.controller)); } catch { return false; }
+  }).toBe(true);
+  await page.evaluate(async () => {
+    localStorage.setItem('real:sentinel', 'keep-local');
+    sessionStorage.setItem('real:sentinel', 'keep-session');
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open('real-sentinel', 1);
+      request.onupgradeneeded = () => request.result.createObjectStore('keep');
+      request.onsuccess = () => { request.result.close(); resolve(); };
+      request.onerror = () => reject(request.error);
+    });
+  });
   await page.goto('/?demo=1');
   await expect(page).toHaveURL(/\/demo\/$/);
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
@@ -378,9 +393,9 @@ test('query demo opens the isolated sample, caches only public files, and resets
       return requests.map(request => request.url);
     }))).flat();
     return {
-      local: localStorage.length,
-      session: sessionStorage.length,
-      indexed: (await indexedDB.databases()).length,
+      local: Object.fromEntries(Object.entries(localStorage)),
+      session: Object.fromEntries(Object.entries(sessionStorage)),
+      indexed: (await indexedDB.databases()).map(database => database.name),
       cacheNames,
       entries: entries.map(entry => {
         const url = new URL(entry);
@@ -389,9 +404,9 @@ test('query demo opens the isolated sample, caches only public files, and resets
       declared
     };
   });
-  expect(storage.local).toBe(0);
-  expect(storage.session).toBe(0);
-  expect(storage.indexed).toBe(0);
+  expect(storage.local).toEqual({ 'real:sentinel': 'keep-local' });
+  expect(storage.session).toEqual({ 'real:sentinel': 'keep-session' });
+  expect(storage.indexed).toEqual(['real-sentinel']);
   expect(storage.cacheNames).toHaveLength(1);
   expect(storage.cacheNames[0]).toMatch(/^gh-account-autoswitch-/);
   expect(storage.entries).not.toEqual([]);

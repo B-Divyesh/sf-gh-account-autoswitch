@@ -2,8 +2,13 @@
 const CACHE = '__CACHE_NAME__';
 const PRECACHE = __PRECACHE__;
 
+function isDeclaredPublicRequest(request) {
+  const url = new URL(request.url);
+  return url.origin === self.location.origin && url.search === '' && PRECACHE.includes(url.pathname);
+}
+
 async function cacheResponse(request, response) {
-  if (response && response.ok) {
+  if (response && response.ok && isDeclaredPublicRequest(request)) {
     const cache = await caches.open(CACHE);
     await cache.put(request, response.clone());
   }
