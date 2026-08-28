@@ -69,7 +69,7 @@ At 390 × 844, the first complete sample result shows the repository, account, a
 
 All prose sentences are 22 words or fewer. Commands, code samples, table rows, navigation labels, and addresses are not sentences. The banned-word scan returned no matches. Untestable affiliation or endorsement statements and the external deployment-ownership sentence were removed from the README and Terms page.
 
-The development sentences about Node, Go, the full test suite, build outputs, and release archives each have a manifest-backed claim test. The one-line catalog description starts with “Choose” and is 76 characters.
+The development sentences about Node, Go, the full test suite, build outputs, and release archives each have a manifest-backed claim test. The one-line catalog description starts with “Choose” and is 70 characters.
 
 ## Terminology
 
