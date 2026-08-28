@@ -1,0 +1,13 @@
+{
+  "links": {
+    "https://gh-account-autoswitch.sociobot.in/": 200,
+    "https://gh-account-autoswitch.sociobot.in/demo/": 200,
+    "https://gh-account-autoswitch.sociobot.in/privacy/": 200,
+    "https://gh-account-autoswitch.sociobot.in/?demo=1": 200,
+    "https://github.com/B-Divyesh/sf-gh-account-autoswitch": 200,
+    "https://gh-account-autoswitch.sociobot.in/terms/": 200,
+    "https://github.com/B-Divyesh/sf-gh-account-autoswitch/issues": 200
+  },
+  "privacyFocused": true,
+  "backFocused": true
+}

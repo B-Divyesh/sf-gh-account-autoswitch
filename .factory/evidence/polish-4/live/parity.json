@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-08-28T14:11:37.380Z",
+  "results": [
+    {
+      "route": "/",
+      "status": 200,
+      "expectedStatus": 200,
+      "liveSha256": "b06ab6ce9f52e61ba1b31cb36bb3c935a03df098508149005d1202e9b1b79ac9",
+      "localSha256": "b06ab6ce9f52e61ba1b31cb36bb3c935a03df098508149005d1202e9b1b79ac9",
+      "matches": true
+    },
+    {
+      "route": "/demo/",
+      "status": 200,
+      "expectedStatus": 200,
+      "liveSha256": "24372ce69e81c3e65bd1b0f97d5d4ee1846891737f21750162ca8e2f58da8dab",
+      "localSha256": "24372ce69e81c3e65bd1b0f97d5d4ee1846891737f21750162ca8e2f58da8dab",
+      "matches": true
+    },
+    {
+      "route": "/privacy/",
+      "status": 200,
+      "expectedStatus": 200,
+      "liveSha256": "3a6c5ba484dbfbabc97ffca6cee576d8a1c890101fd560de8cee8a8c324a3f22",
+      "localSha256": "3a6c5ba484dbfbabc97ffca6cee576d8a1c890101fd560de8cee8a8c324a3f22",
+      "matches": true
+    },
+    {
+      "route": "/terms/",
+      "status": 200,
+      "expectedStatus": 200,
+      "liveSha256": "0a3154b0117d02219f05d3cb3a0d73c61c7bac5e1e9a6cbc2ffac0f673cc3d69",
+      "localSha256": "0a3154b0117d02219f05d3cb3a0d73c61c7bac5e1e9a6cbc2ffac0f673cc3d69",
+      "matches": true
+    },
+    {
+      "route": "/no-such-page",
+      "status": 404,
+      "expectedStatus": 404,
+      "liveSha256": "4a0c2bebc7a5c116386d87d7a351dfa9838a21394438bc4ac3bdec8bd78f108a",
+      "localSha256": "4a0c2bebc7a5c116386d87d7a351dfa9838a21394438bc4ac3bdec8bd78f108a",
+      "matches": true
+    },
+    {
+      "route": "/sw.js",
+      "status": 200,
+      "expectedStatus": 200,
+      "liveSha256": "39245cb7626dff5467a2712a154242a3515d1ec4b9f3b75c1ec28e200f1b23de",
+      "localSha256": "39245cb7626dff5467a2712a154242a3515d1ec4b9f3b75c1ec28e200f1b23de",
+      "matches": true
+    },
+    {
+      "route": "/robots.txt",
+      "status": 200,
+      "expectedStatus": 200,
+      "liveSha256": "d804261503f63dbdbf84e6c66e91d22013262f0d8df67c643649d650e9ba584b",
+      "localSha256": "d804261503f63dbdbf84e6c66e91d22013262f0d8df67c643649d650e9ba584b",
+      "matches": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "status": 200,
+      "expectedStatus": 200,
+      "liveSha256": "af9cb16b056bb8cfb0d1faedce311df76a918081e4cf7c2bb30dece7aaaeb9aa",
+      "localSha256": "af9cb16b056bb8cfb0d1faedce311df76a918081e4cf7c2bb30dece7aaaeb9aa",
+      "matches": true
+    }
+  ]
+}

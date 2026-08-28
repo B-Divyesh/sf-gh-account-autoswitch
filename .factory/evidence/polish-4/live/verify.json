@@ -1,0 +1,84 @@
+{
+  "base": "https://gh-account-autoswitch.sociobot.in",
+  "checks": 11,
+  "results": [
+    {
+      "route": "/",
+      "viewport": 1440,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/demo/",
+      "viewport": 1440,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/privacy/",
+      "viewport": 1440,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/terms/",
+      "viewport": 1440,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/no-such-page",
+      "viewport": 1440,
+      "status": 404,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/",
+      "viewport": 390,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/demo/",
+      "viewport": 390,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/privacy/",
+      "viewport": 390,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/terms/",
+      "viewport": 390,
+      "status": 200,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/no-such-page",
+      "viewport": 390,
+      "status": 404,
+      "axeSeriousCritical": 0,
+      "consoleErrors": 0
+    },
+    {
+      "route": "/?demo=1",
+      "viewport": 390,
+      "banner": true,
+      "reset": true,
+      "isolatedStorage": true,
+      "startForReal": true
+    }
+  ]
+}

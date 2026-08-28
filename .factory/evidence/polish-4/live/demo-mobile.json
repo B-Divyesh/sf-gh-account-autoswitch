@@ -1,0 +1,45 @@
+{
+  "url": "https://gh-account-autoswitch.sociobot.in/demo/",
+  "banner": true,
+  "firstRowBottom": 513.171875,
+  "viewportHeight": 844,
+  "focusedHeading": true,
+  "storage": {
+    "local": "keep-local",
+    "session": "keep-session",
+    "databases": [
+      "real-sentinel"
+    ],
+    "cacheNames": [
+      "gh-account-autoswitch-0.1.0-bd4c7ce2f3a2"
+    ],
+    "entries": [
+      "https://gh-account-autoswitch.sociobot.in/",
+      "https://gh-account-autoswitch.sociobot.in/index.html",
+      "https://gh-account-autoswitch.sociobot.in/privacy/",
+      "https://gh-account-autoswitch.sociobot.in/terms/",
+      "https://gh-account-autoswitch.sociobot.in/404.html",
+      "https://gh-account-autoswitch.sociobot.in/apple-touch-icon.png",
+      "https://gh-account-autoswitch.sociobot.in/assets/main--tZhqpWn.js",
+      "https://gh-account-autoswitch.sociobot.in/assets/route-landscape-CfVEzFD2.webp",
+      "https://gh-account-autoswitch.sociobot.in/assets/route-landscape-mobile-DlSuo5mL.webp",
+      "https://gh-account-autoswitch.sociobot.in/assets/style-BPqrQeYU.css",
+      "https://gh-account-autoswitch.sociobot.in/demo/index.html",
+      "https://gh-account-autoswitch.sociobot.in/manifest.webmanifest",
+      "https://gh-account-autoswitch.sociobot.in/mark.svg",
+      "https://gh-account-autoswitch.sociobot.in/privacy/index.html",
+      "https://gh-account-autoswitch.sociobot.in/robots.txt",
+      "https://gh-account-autoswitch.sociobot.in/sitemap.xml",
+      "https://gh-account-autoswitch.sociobot.in/social-card.png",
+      "https://gh-account-autoswitch.sociobot.in/terms/index.html",
+      "https://gh-account-autoswitch.sociobot.in/demo/",
+      "https://gh-account-autoswitch.sociobot.in/sw.js"
+    ],
+    "publicCacheOnly": true
+  },
+  "requestOrigins": [
+    "https://gh-account-autoswitch.sociobot.in"
+  ],
+  "offlineStatus": 200,
+  "offlineHeading": "See three repository-to-account matches"
+}
