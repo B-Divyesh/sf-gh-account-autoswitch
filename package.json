@@ -16,6 +16,7 @@
     "test:claims": "playwright test tests/claims.spec.ts",
     "pretest:browser": "npm run build:site",
     "test:browser": "playwright test tests/browser.spec.ts",
+    "verify:live": "node scripts/verify-live.mjs",
     "test": "npm run test:go && npm run test:site && npm run test:claims && npm run test:browser",
     "package": "node scripts/package.mjs"
   },

@@ -1,0 +1,14 @@
+{
+  "url": "https://gh-account-autoswitch.sociobot.in/",
+  "loadMs": 731,
+  "errors": [],
+  "a11y": {
+    "title": "gh-account-autoswitch — choose an account per repository",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 3023
+  }
+}
