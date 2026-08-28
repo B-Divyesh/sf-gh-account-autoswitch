@@ -1,0 +1,76 @@
+{
+  "url": "https://gh-account-autoswitch.sociobot.in/demo/",
+  "firstSample": {
+    "bottom": 513.171875,
+    "text": "github.com/acme-corp/paymentsdev@acme.exampleAcme work"
+  },
+  "minimumControl": 44,
+  "controls": [
+    {
+      "label": "Skip to main content",
+      "width": 209,
+      "height": 50.34375
+    },
+    {
+      "label": "Reset demo",
+      "width": 178,
+      "height": 44
+    },
+    {
+      "label": "Start for real",
+      "width": 178,
+      "height": 44
+    },
+    {
+      "label": "gh autoswitch home",
+      "width": 138.78125,
+      "height": 44
+    },
+    {
+      "label": "Demo",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "Install",
+      "width": 45.734375,
+      "height": 44
+    },
+    {
+      "label": "Replay recording",
+      "width": 136.984375,
+      "height": 44
+    },
+    {
+      "label": "Copy demo command",
+      "width": 170.96875,
+      "height": 44
+    },
+    {
+      "label": "gh autoswitch home",
+      "width": 138.78125,
+      "height": 44
+    },
+    {
+      "label": "Demo",
+      "width": 44,
+      "height": 44
+    },
+    {
+      "label": "Source ↗",
+      "width": 64.265625,
+      "height": 44
+    },
+    {
+      "label": "Privacy",
+      "width": 50.703125,
+      "height": 44
+    },
+    {
+      "label": "Terms",
+      "width": 44,
+      "height": 44
+    }
+  ],
+  "errors": []
+}

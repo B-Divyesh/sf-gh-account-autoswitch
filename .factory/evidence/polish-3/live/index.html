@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07100f">
+    <meta name="description" content="Choose the right signed-in GitHub account for each repository without changing the account used by other commands.">
+    <title>gh-account-autoswitch — choose an account per repository</title>
+    <link rel="canonical" href="https://gh-account-autoswitch.sociobot.in/">
+    <link rel="icon" href="/mark.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gh-account-autoswitch.sociobot.in/">
+    <meta property="og:title" content="Choose the right GitHub account per repository">
+    <meta property="og:description" content="Match each repository to a signed-in account before the GitHub CLI runs.">
+    <meta property="og:image" content="https://gh-account-autoswitch.sociobot.in/social-card.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Choose the right GitHub account per repository">
+    <meta name="twitter:description" content="Match each repository to a signed-in account before the GitHub CLI runs.">
+    <meta name="twitter:image" content="https://gh-account-autoswitch.sociobot.in/social-card.png">
+    <link rel="preload" as="image" href="/assets/route-landscape-CfVEzFD2.webp" type="image/webp" media="(min-width: 641px)" fetchpriority="high">
+    <link rel="preload" as="image" href="/assets/route-landscape-mobile-DlSuo5mL.webp" type="image/webp" media="(max-width: 640px)" fetchpriority="high">
+    <script type="module" crossorigin src="/assets/main--tZhqpWn.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/style-BPqrQeYU.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="offline" data-offline hidden role="status">You are offline. Installation instructions are still available.</div>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Primary navigation">
+        <a class="brand" href="/" aria-label="gh autoswitch home"><svg class="brand-mark" aria-hidden="true" viewBox="0 0 36 36"><path d="M5 11 18 4l13 7v14l-13 7L5 25Z"/><path d="m10 14 8 4 8-4M18 18v9"/></svg><span><b>gh</b><i>/</i>autoswitch</span></a>
+        <div class="nav-links"><a href="/demo/">Demo</a><a href="#how">How it works</a><a href="#install">Install</a><a href="/privacy/">Privacy</a></div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span aria-hidden="true">●</span> Account matching for the GitHub CLI</p>
+          <h1 id="hero-title" tabindex="-1">Choose the right GitHub account per repository</h1>
+          <p class="lede">For developers with work and personal GitHub accounts, it picks one account for each <code>gh</code> command.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="/?demo=1">Try it with sample data <span aria-hidden="true">→</span></a>
+            <a class="button secondary" href="#install">Install the command <span aria-hidden="true">↓</span></a>
+          </div>
+          <p class="action-note">Shows three repository-to-account matches; nothing is saved.</p>
+          <ul class="trust-list" aria-label="Product facts">
+            <li><span aria-hidden="true">✓</span> Free under MIT</li>
+            <li><span aria-hidden="true">✓</span> No site analytics</li>
+            <li><span aria-hidden="true">✓</span> Offline after one visit</li>
+          </ul>
+        </div>
+        <figure class="hero-visual">
+          <picture><source media="(max-width: 640px)" srcset="/assets/route-landscape-mobile-DlSuo5mL.webp"><img src="/assets/route-landscape-CfVEzFD2.webp" width="1536" height="1024" alt="Two separate account routes pass through a matching rule and reach one repository." fetchpriority="high"></picture>
+          <figcaption><span><b class="dot cyan"></b> personal@github.com</span><span class="policy">matching rule found</span><span><b class="dot lime"></b> work@github.com</span></figcaption>
+        </figure>
+      </section>
+
+      <section class="proof strip" aria-label="How commands are kept separate">
+        <div class="shell proof-grid">
+          <p><strong>Uses one account for one command</strong><span>The token goes only to that command.</span></p>
+          <p><strong>Matches the repository</strong><span>Use its host, owner, remote, or folder.</span></p>
+          <p><strong>Works beside other commands</strong><span>Your active GitHub account stays unchanged.</span></p>
+        </div>
+      </section>
+
+      <section class="section shell" id="how" aria-labelledby="how-title">
+        <div class="section-heading"><p class="kicker">01 / How account rules work</p><h2 id="how-title">Choose an account before <code>gh</code> runs</h2><p>The command uses your rules and accounts already signed in to the GitHub CLI.</p></div>
+        <ol class="steps">
+          <li><span class="step-number">01</span><div class="step-icon folder" aria-hidden="true"></div><h3>Read the repository</h3><p>Check its <code>origin</code> remote and current folder.</p></li>
+          <li><span class="step-number">02</span><div class="step-icon prism" aria-hidden="true"></div><h3>Find the first complete match</h3><p>Each field in a rule must match. Rules are checked from top to bottom.</p></li>
+          <li><span class="step-number">03</span><div class="step-icon terminal-icon" aria-hidden="true">›_</div><h3>Run the command with that account</h3><p>The selected token goes only to the GitHub command you started.</p></li>
+        </ol>
+      </section>
+
+      <section class="section explorer-section" id="rules" aria-labelledby="rules-title">
+        <div class="shell">
+          <div class="section-heading split-heading"><div><p class="kicker">02 / Check a match before running</p><h2 id="rules-title">See which account a repository will use</h2></div><p><code>which</code> shows the matching input and rule. It does not ask the GitHub CLI for a token.</p></div>
+          <div class="rule-explorer">
+            <div class="scenario-picker"><label for="scenario">See a sample repository match</label><select id="scenario" data-scenario><option value="work">acme-corp / payments</option><option value="personal">octocat / dotfiles</option><option value="enterprise">field-team / mobile</option><option value="unmatched">unknown-org / prototype</option></select><div class="rule-stack" aria-hidden="true"><span class="rule-line active"><b>1</b> owner = ^acme-corp$</span><span class="rule-line"><b>2</b> folder = ~/src/personal/**</span><span class="rule-line"><b>3</b> host = github.corp.example</span></div></div>
+            <div class="trace" aria-live="polite" data-trace><div class="terminal-bar"><span></span><span></span><span></span><b>gh-account-autoswitch which</b></div><dl><div><dt>Host</dt><dd data-host>github.com</dd></div><div><dt>Owner</dt><dd data-owner>acme-corp</dd></div><div><dt>Folder</dt><dd data-directory>~/src/work/payments</dd></div><div class="trace-result"><dt>Rule</dt><dd data-rule>Acme work · rule 1</dd></div><div class="trace-account"><dt>Account</dt><dd data-account>dev@acme.example</dd></div></dl></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell config-section" aria-labelledby="config-title">
+        <div class="section-heading"><p class="kicker">03 / Ways to match a repository</p><h2 id="config-title">Write small rules for each account</h2></div>
+        <div class="config-layout">
+          <div class="terminal code-panel"><div class="terminal-bar"><span></span><span></span><span></span><b>~/.config/gh-accounts.toml</b></div><pre tabindex="0" aria-label="Example account rules"><code><span class="comment"># The first complete match wins.</span>
+<span class="key">version</span> = <span class="number">1</span>
+
+[[<span class="key">rules</span>]]
+<span class="key">name</span> = <span class="string">"Acme work"</span>
+<span class="key">account</span> = <span class="string">"dev@acme.example"</span>
+<span class="key">host</span> = <span class="string">"github.com"</span>
+<span class="key">owner</span> = <span class="string">"^acme-corp$"</span>
+
+[[<span class="key">rules</span>]]
+<span class="key">name</span> = <span class="string">"Personal"</span>
+<span class="key">account</span> = <span class="string">"octocat"</span>
+<span class="key">directory</span> = <span class="string">"~/src/personal/**"</span></code></pre></div>
+          <dl class="matchers"><div><dt><code>host</code></dt><dd>Match one GitHub or GitHub Enterprise Server host.</dd></div><div><dt><code>owner</code></dt><dd>Match an organization or user name pattern.</dd></div><div><dt><code>remote</code></dt><dd>Match the complete host, owner, and repository path.</dd></div><div><dt><code>directory</code></dt><dd>Match a local folder pattern.</dd></div></dl>
+        </div>
+      </section>
+
+      <section class="section install-section" id="install" aria-labelledby="install-title">
+        <div class="shell install-grid">
+          <div><p class="kicker">04 / Install and create rules</p><h2 id="install-title">Add the command, then review your rules</h2><p>Source installation requires Go 1.22 or newer and an authenticated GitHub CLI.</p><a class="text-link" href="https://github.com/B-Divyesh/sf-gh-account-autoswitch#matching-behavior">Read the complete CLI reference <span aria-hidden="true">↗</span></a></div>
+          <div class="install-commands"><div class="command-block"><span class="command-label">1 · Install the command</span><code tabindex="0" data-copy-value="go install github.com/B-Divyesh/sf-gh-account-autoswitch/cmd/gh-account-autoswitch@latest">go install github.com/B-Divyesh/sf-gh-account-autoswitch/cmd/<strong>gh-account-autoswitch@latest</strong></code><button type="button" class="copy" data-copy aria-label="Copy install command">Copy install command</button></div><div class="command-block"><span class="command-label">2 · Create starter rules</span><code tabindex="0" data-copy-value="gh-account-autoswitch init">gh-account-autoswitch <strong>init</strong></code><button type="button" class="copy" data-copy aria-label="Copy create-rules command">Copy create-rules command</button></div><p class="copy-status" data-copy-status aria-live="polite"></p></div>
+        </div>
+      </section>
+
+      <section class="section shell safety" aria-labelledby="safety-title">
+        <div class="section-heading"><p class="kicker">What the command does not change</p><h2 id="safety-title">Keep other GitHub commands untouched</h2></div>
+        <div class="safety-grid"><article><span aria-hidden="true">01</span><h3>Keeps the active account</h3><p>It never runs <code>gh auth switch</code>.</p></article><article><span aria-hidden="true">02</span><h3>Does not save tokens</h3><p>A selected token is not printed, logged, or added to the rules file.</p></article><article><span aria-hidden="true">03</span><h3>Stops without a match</h3><p>If no rule matches, it exits with code 3 and does not run <code>gh</code>.</p></article></div>
+      </section>
+
+      <section class="cta shell" aria-labelledby="cta-title"><div><p class="eyebrow"><span aria-hidden="true">●</span> Run the bundled sample</p><h2 id="cta-title">Check three account matches first</h2></div><a class="button primary" href="/demo/">Try it with sample data <span aria-hidden="true">→</span></a></section>
+    </main>
+
+    <footer class="site-footer"><div class="shell footer-grid"><a class="brand" href="/" aria-label="gh autoswitch home"><svg class="brand-mark" aria-hidden="true" viewBox="0 0 36 36"><path d="M5 11 18 4l13 7v14l-13 7L5 25Z"/><path d="m10 14 8 4 8-4M18 18v9"/></svg><span><b>gh</b><i>/</i>autoswitch</span></a><p>Choose one GitHub account for each repository.<br>Built by Param Factory · v0.1.0</p><nav aria-label="Footer navigation"><a href="/demo/">Demo</a><a href="https://github.com/B-Divyesh/sf-gh-account-autoswitch">Source ↗</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav></div></footer>
+  </body>
+</html>

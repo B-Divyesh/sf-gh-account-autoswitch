@@ -65,7 +65,7 @@ page.on('request', request => demoOrigins.add(new URL(request.url()).origin));
 await page.goto(new URL('/?demo=1', base).href, { waitUntil: 'networkidle' });
 assert.match(page.url(), /\/demo\/$/, 'query entry reaches demo route');
 assert.equal(await page.getByText('Demo — sample data, nothing is saved').isVisible(), true, 'demo banner');
-assert.equal(await page.getByRole('row').count(), 5, 'sample rows');
+assert.equal(await page.locator('.recording-table [role="row"]').count(), 5, 'sample rows');
 assert.ok(await page.locator('[data-demo-row="work"]').evaluate(element => element.getBoundingClientRect().bottom) <= 844, 'first mobile sample row is above the fold');
 await page.getByRole('button', { name: 'Replay recording' }).click();
 await page.getByRole('button', { name: 'Reset demo' }).click();
